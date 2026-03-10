@@ -1,0 +1,10 @@
+# Netlify Redirects
+# Place this file in the ROOT of your deployment folder
+
+# Clean URLs — remove .html from all pages
+/privacy     /privacy.html    200
+/terms       /terms.html      200
+/about       /about.html      200
+
+# 404 fallback — must be last
+/*           /404.html        404
