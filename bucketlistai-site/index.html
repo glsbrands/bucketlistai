@@ -62,7 +62,7 @@
     ══════════════════════════════════════════ */
     @keyframes riseIn   {from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
     @keyframes fadeIn   {from{opacity:0}to{opacity:1}}
-    @keyframes kbz      {0%{transform:scale(1)}100%{transform:scale(1.06) translate(-0.6%,-0.4%)}}
+    @keyframes kbz      {0%{transform:scale(1)}100%{transform:scale(1.04) translate(-0.3%,-0.2%)}}
     @keyframes marquee  {from{transform:translateX(0)}to{transform:translateX(-50%)}}
     @keyframes shimmer  {0%,100%{opacity:.9}50%{opacity:1}}
     @keyframes floatY   {0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
@@ -187,26 +187,26 @@
        HERO — full bleed with strong scrim + centered content
     ══════════════════════════════════════════ */
     .hero{
-      position:relative;min-height:100vh;
+      position:relative;height:100vh;min-height:620px;max-height:1080px;
       display:flex;flex-direction:column;
       align-items:center;justify-content:center;
       text-align:center;
-      padding:calc(var(--nav-h) + 60px) 24px 120px;
+      padding:calc(var(--nav-h) + 40px) 24px 80px;
       overflow:hidden;
     }
 
     .hero-photo{
       position:absolute;inset:0;z-index:0;
-      background:url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1800&q=80')
-        center/cover no-repeat;
-      animation:kbz 22s ease-in-out infinite alternate;
+      background:url('/images/hero.jpg')
+        center center/cover no-repeat;
+      animation:kbz 30s ease-in-out infinite alternate;
     }
     /* Strong multi-layer scrim so title is always readable */
     .hero-photo::after{
       content:'';position:absolute;inset:0;
       background:
-        radial-gradient(ellipse at 50% 40%, rgba(7,30,30,.55) 0%, rgba(7,30,30,.85) 70%),
-        linear-gradient(to bottom, rgba(7,30,30,.5) 0%, rgba(7,30,30,.65) 50%, rgba(7,30,30,.98) 100%);
+        radial-gradient(ellipse at 50% 40%, rgba(7,30,30,.15) 0%, rgba(7,30,30,.45) 65%),
+        linear-gradient(to bottom, rgba(7,30,30,.1) 0%, rgba(7,30,30,.25) 35%, rgba(7,30,30,.75) 70%, rgba(7,30,30,.99) 100%);
     }
 
     /* decorative corner marks */
@@ -868,7 +868,7 @@
     <a href="/ideas">Ideas</a>
     <a href="/blog">Blog</a>
     <a href="/about">About</a>
-    <a href="/cdn-cgi/l/email-protection#325a575e5e5d72465a575047515957465e5b4146535b1c515d5f">Contact</a>
+    <a href="mailto:hello@thebucketlistai.com">Contact</a>
   </div>
   <a href="/app" class="nav-cta">Build My List ✦</a>
   <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
@@ -881,7 +881,7 @@
   <a href="/ideas" onclick="closeMenu()">Ideas</a>
   <a href="/blog" onclick="closeMenu()">Blog</a>
   <a href="/about" onclick="closeMenu()">About</a>
-  <a href="/cdn-cgi/l/email-protection#acc4c9c0c0c3ecd8c4c9ced9cfc7c9d8c0c5dfd8cdc582cfc3c1" onclick="closeMenu()">Contact</a>
+  <a href="mailto:hello@thebucketlistai.com" onclick="closeMenu()">Contact</a>
   <a href="/app" class="mob-cta" onclick="closeMenu()">Build My List ✦</a>
   <div class="mob-tagline">Your Dreams. One Lifetime.</div>
 </div>
@@ -926,6 +926,9 @@
     <a href="/app?mode=family" class="mode-pill"><span>⌂</span> Family</a>
     <a href="/app?mode=surprise" class="mode-pill"><span>✧</span> Surprise Me</a>
   </div>
+
+  <!-- bottom fade into page -->
+  <div style="position:absolute;bottom:0;left:0;right:0;height:180px;background:linear-gradient(to bottom,transparent,var(--ink));z-index:1;pointer-events:none"></div>
 
   <div class="scroll-cue">
     <span>Discover</span>
@@ -1444,7 +1447,7 @@
     <div>
       <div class="footer-brand">The Bucket List <em>AI</em></div>
       <p class="footer-tag">An AI that listens deeply and builds something only you could have. Your dreams. One lifetime.</p>
-      <a href="/cdn-cgi/l/email-protection#e58d8089898aa5918d808790868e8091898c9691848ccb868a88" class="footer-email"><span class="__cf_email__" data-cfemail="f39b969f9f9cb3879b969186909896879f9a8087929add909c9e">[email&#160;protected]</span></a>
+      <a href="mailto:hello@thebucketlistai.com" class="footer-email">hello@thebucketlistai.com</a>
     </div>
     <div class="footer-col">
       <h4>Explore</h4>
@@ -1466,7 +1469,7 @@
     <div class="footer-col">
       <h4>Company</h4>
       <ul>
-        <li><a href="/cdn-cgi/l/email-protection#28404d444447685c404d4a5d4b434d5c44415b5c4941064b4745">Contact</a></li>
+        <li><a href="mailto:hello@thebucketlistai.com">Contact</a></li>
         <li><a href="/privacy">Privacy Policy</a></li>
         <li><a href="/terms">Terms of Use</a></li>
       </ul>
@@ -1477,7 +1480,7 @@
     <span class="footer-sig">Your Dreams. One Lifetime.</span>
   </div>
 </footer>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   const nav=document.getElementById('nav');
   if(nav)window.addEventListener('scroll',()=>nav.classList.toggle('solid',window.scrollY>50),{passive:true});
   const hamburger=document.getElementById('hamburger');
@@ -1498,11 +1501,4 @@
     }catch{return false;}
   }
   document.addEventListener('DOMContentLoaded',function(){
-    document.querySelectorAll('form.newsletter-form,.cta-form,[data-ml]').forEach(function(form){
-      form.addEventListener('submit',async function(e){
-        e.preventDefault();
-        const inp=form.querySelector('input[type="email"]');
-        const btn=form.querySelector('button[type="submit"],button');
-        if(!inp||!btn)return;
-        const email=inp.value.trim();
-        if(!email||!email.includes
+    document.que
