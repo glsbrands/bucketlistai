@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>The Bucket List AI — Build Your List</title>
-  <meta name="description" content="Answer 7 questions. We build your personalized bucket list in 60 seconds. A life coaching experience powered by AI."/>
+  <meta name="description" content="Answer 8 questions. We build your personalized bucket list in 3 minutes. Deeply personal, AI-powered, free."/>
   <link rel="canonical" href="https://thebucketlistai.com/app"/>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230B3D3D'/%3E%3Ctext x='16' y='22' font-size='18' text-anchor='middle' fill='%23C9A84C' font-family='Georgia'%3E✦%3C/text%3E%3C/svg%3E"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -12,6 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html,body{width:100%;min-height:100vh;background:#071E1E;font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#F5EDD8}
@@ -208,16 +209,17 @@ const LIFE_STAGES=[
   {id:"retirement",label:"Retirement",icon:"✦"},
 ];
 const STEPS=[
-  {id:"name",      type:"text",            eyebrow:"Welcome",      question:"Before we begin — what's your name?",                              subtitle:"This list will be built for you, and only you.",               placeholder:"Your name..."},
-  {id:"location",  type:"text",            eyebrow:"Step 1 of 7",  question:"Where in the world do you call home?",                             subtitle:"We'll find extraordinary adventures on your doorstep too.",    placeholder:"e.g. London, UK or Dubai, UAE"},
-  {id:"stage",     type:"single_icon",     eyebrow:"Step 2 of 7",  question:"What chapter of life are you in right now?",                       subtitle:"Each season of life deserves its own kind of extraordinary.",  options:LIFE_STAGES},
-  {id:"regret",    type:"text_big_values", eyebrow:"Step 3 of 7",  question:"What do you want your life to have been about?",                   subtitle:"If you looked back from the end — what would matter most?",   placeholder:"Describe it in your own words..."},
-  {id:"future",    type:"text_big",        eyebrow:"Step 4 of 7",  question:"Paint me a picture. It's 10 years from now — what does your life look like?", subtitle:"Where are you? Who are you with? What does a Tuesday feel like?", placeholder:"e.g. I wake up near the ocean, I've built something meaningful, I've seen 30 countries..."},
-  {id:"categories",type:"multiselect",     eyebrow:"Step 5 of 7",  question:"What kinds of experiences light you up?",                          subtitle:"Choose everything that makes your heart beat faster.",         options:CAT_KEYS},
-  {id:"difficulty",type:"multiselect",     eyebrow:"Step 6 of 7",  question:"What does your life have room for right now?",                     subtitle:"Be honest — the best list meets you where you are.",          options:["Something this weekend","A goal for this year","A big challenge to work toward","A dream for one day"]},
-  {id:"count",     type:"single",          eyebrow:"Step 7 of 7",  question:"How long should your one wild and precious life list be?",         subtitle:"There are no wrong answers here.",                             options:["10 — focused and intentional","25 — a life well lived","50 — go bigger than you planned","100 — the full, unedited version"]},
+  {id:"name",      type:"text",            eyebrow:"Welcome",      question:"Let's start. What's your name?",                              subtitle:"This list will be built for you, and only you.",               placeholder:"Your name..."},
+  {id:"location",  type:"text",            eyebrow:"Step 1 of 8",  question:"Where in the world do you call home?",                             subtitle:"We'll find extraordinary adventures on your doorstep too.",    placeholder:"e.g. London, UK or Dubai, UAE"},
+  {id:"stage",     type:"single_icon",     eyebrow:"Step 2 of 8",  question:"What chapter of life are you in right now?",                       subtitle:"Each season of life deserves its own kind of extraordinary.",  options:LIFE_STAGES},
+  {id:"regret",    type:"text_big_values", eyebrow:"Step 3 of 8",  question:"You're 90, looking back. What do you hope you spent your time on?",  subtitle:"Be specific — not 'family and adventure' but what exactly. The more detail, the better your list.", placeholder:"e.g. I want to have taken my kids to see the places I grew up hearing about. Built something that outlasted me. Learned Italian properly. Said the things I kept almost saying. Watched sunrise from somewhere that earned it..."},
+  {id:"future",    type:"text_big",        eyebrow:"Step 4 of 8",  question:"It's 10 years from now and everything went right. Describe a specific Tuesday morning.", subtitle:"Sensory details, not goals — what do you see, hear, smell? Who is there? What's on the calendar that week?", placeholder:"e.g. I wake up in the house we finally bought outside the city. Kids are older. Working on something I actually chose. Morning run, then work I care about, dinner we cooked. Been to Japan twice by then. There's a dog..."},
+  {id:"fear",      type:"text_big",        eyebrow:"Step 5 of 8",  question:"What’s been on every mental version of your bucket list — but never actually gets booked?", subtitle:"The thing you keep almost doing. The AI will make sure this one finally makes it.",              placeholder:"e.g. Three weeks in Japan. Write the novel I’ve been outlining for four years. Take my mum back to where she grew up. Learn to freedive. Actually run a marathon — not just sign up for one..."},
+  {id:"categories",type:"multiselect",     eyebrow:"Step 6 of 8",  question:"What kinds of experiences light you up?",                          subtitle:"Choose everything that makes your heart beat faster.",         options:CAT_KEYS},
+  {id:"difficulty",type:"multiselect",     eyebrow:"Step 7 of 8",  question:"What does your life have room for right now?",                     subtitle:"Be honest — the best list meets you where you are.",          options:["Something this weekend","A goal for this year","A big challenge to work toward","A dream for one day"]},
+  {id:"count",     type:"single",          eyebrow:"Step 8 of 8",  question:"How long should your one wild and precious life list be?",         subtitle:"There are no wrong answers here.",                             options:["10 — focused and intentional","25 — a life well lived","50 — go bigger than you planned","100 — the full, unedited version"]},
 ];
-const GMSGS=["Listening carefully to what you shared...","Thinking about the life you described...","Finding experiences that match who you are...","Weaving in your values and your vision...","Selecting only the most meaningful adventures...","Putting the final touches on your life list..."];
+const GMSGS=["Reading everything you shared...","Identifying the patterns in what you told us...","Synthesising your values, vision, and what you keep postponing...","Building experiences around the life you described...","Grounding your list in where you actually live...","Writing your personal summary now...","Ensuring every item earns its place...","One last pass — making sure this list could only ever be yours..."];
 
 /* ── SHARED ATOMS ────────────────────────────────────────────────── */
 function Logo(){
@@ -384,7 +386,746 @@ function EmailModal({userName,onClose}){
   );
 }
 
-/* ── SHARE MODAL ─────────────────────────────────────────────────── */
+/* ── PDF MODAL ────────────────────────────────────────────────────── */
+function PDFModal({items,ans,onClose}){
+  const [tab,setTab]=useState("free");
+  const [generating,setGenerating]=useState(false);
+  const [done,setDone]=useState(false);
+  const [premiumDone,setPremiumDone]=useState(false);
+  const [email,setEmail]=useState("");
+  const [emailSent,setEmailSent]=useState(false);
+  const name=ans.name||"Your";
+  const count=items.length;
+  const doneCount=items.filter(i=>i.done).length;
+
+  // ── Stripe Payment Link ─────────────────────────────────────────────────
+  // Create at dashboard.stripe.com → Payment Links → $9.99 one-time
+  // Set "After payment" redirect to: https://thebucketlistai.com/app?premium=1
+  const STRIPE_LINK="https://buy.stripe.com/REPLACE_WITH_YOUR_LINK";
+
+  function goToPremium(){
+    // Save list + quiz answers to sessionStorage so we can retrieve after payment
+    try{
+      sessionStorage.setItem("bl-premium-pending", JSON.stringify({items,ans}));
+    }catch(e){}
+    // Open Stripe in new tab so user doesn't lose their list
+    window.open(STRIPE_LINK, "_blank", "noopener");
+  }
+
+  // ── FREE PDF ────────────────────────────────────────────────────────────
+  async function generateFreePDF(){
+    setGenerating(true);
+    try{
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+      const W=210, H=297;
+      const GOLD=[201,168,76];
+      const INK_C=[7,30,30];
+      const IVY_C=[245,237,216];
+      const MIST_C=[160,185,180];
+
+      // Cover page
+      doc.setFillColor(...INK_C);
+      doc.rect(0,0,W,H,"F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.4);
+      doc.line(20,18,190,18);
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(8);
+      doc.setFont("helvetica","bold");
+      doc.text("THE BUCKET LIST AI  ✦  THEBUCKETLISTAI.COM", W/2, 28, {align:"center"});
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.line(20,34,190,34);
+      doc.setTextColor(...IVY_C);
+      doc.setFontSize(48);
+      doc.setFont("helvetica","bold");
+      doc.text(name+"'s", W/2, 120, {align:"center"});
+      doc.setFontSize(32);
+      doc.setFont("helvetica","normal");
+      doc.text("Bucket List", W/2, 140, {align:"center"});
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.5);
+      doc.line(60,152,150,152);
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(9);
+      doc.setFont("helvetica","bold");
+      doc.text("ONE WILD AND PRECIOUS LIFE", W/2, 162, {align:"center"});
+
+      // Stats box
+      doc.setFillColor(14,58,58);
+      doc.rect(40,178,130,44,"F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.rect(40,178,130,44,"S");
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(22);
+      doc.setFont("helvetica","bold");
+      doc.text(String(count), 80, 196, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("EXPERIENCES", 80, 204, {align:"center"});
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.2);
+      doc.line(105,182,105,218);
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(22);
+      doc.setFont("helvetica","bold");
+      doc.text(String(doneCount), 140, 196, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("COMPLETED", 140, 204, {align:"center"});
+
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.line(20,H-18,190,H-18);
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","normal");
+      doc.text("Generated with love. Live the list.", W/2, H-10, {align:"center"});
+
+      // List pages
+      const byCategory={};
+      items.forEach(item=>{
+        const cat=item.category||"Adventures";
+        if(!byCategory[cat]) byCategory[cat]=[];
+        byCategory[cat].push(item);
+      });
+
+      for(const [cat,catItems] of Object.entries(byCategory)){
+        doc.addPage();
+        doc.setFillColor(...INK_C);
+        doc.rect(0,0,W,H,"F");
+
+        // Category header
+        doc.setFillColor(14,58,58);
+        doc.rect(0,0,W,28,"F");
+        doc.setTextColor(...GOLD);
+        doc.setFontSize(9);
+        doc.setFont("helvetica","bold");
+        doc.text(cat.toUpperCase(), 20, 17);
+        doc.setTextColor(...MIST_C);
+        doc.setFontSize(7);
+        doc.text(`${catItems.length} experience${catItems.length!==1?"s":""}`, 190, 17, {align:"right"});
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(0.3);
+        doc.line(0,28,W,28);
+
+        let y=40;
+        catItems.forEach(item=>{
+          if(y>H-30){
+            doc.addPage();
+            doc.setFillColor(...INK_C);
+            doc.rect(0,0,W,H,"F");
+            y=20;
+          }
+          const isDone=item.done;
+
+          // Checkbox
+          doc.setDrawColor(...GOLD);
+          doc.setLineWidth(0.4);
+          doc.rect(20,y-4,6,6);
+          if(isDone){
+            doc.setTextColor(...GOLD);
+            doc.setFontSize(7);
+            doc.text("✓",21.5,y+0.5);
+          }
+
+          // Title
+          doc.setTextColor(isDone?MIST_C:IVY_C);
+          doc.setFontSize(10);
+          doc.setFont("helvetica","bold");
+          const titleLines=doc.splitTextToSize(item.title, 118);
+          doc.text(titleLines[0], 30, y+0.5);
+
+          // Location
+          if(item.location){
+            doc.setTextColor(...GOLD);
+            doc.setFontSize(7);
+            doc.setFont("helvetica","normal");
+            doc.text("📍 "+item.location, 165, y+0.5, {align:"right"});
+          }
+
+          // Description
+          if(!isDone&&item.description){
+            doc.setTextColor(...MIST_C);
+            doc.setFontSize(8);
+            doc.setFont("helvetica","italic");
+            const descLines=doc.splitTextToSize(item.description, 148);
+            doc.text(descLines[0], 30, y+8);
+          }
+
+          // Difficulty
+          doc.setTextColor(...GOLD);
+          doc.setFontSize(6.5);
+          doc.setFont("helvetica","bold");
+          doc.text(item.difficulty||"", 165, y+8, {align:"right"});
+
+          doc.setDrawColor(14,58,58);
+          doc.setLineWidth(0.3);
+          doc.line(20,y+(isDone?10:18),190,y+(isDone?10:18));
+          y+=(isDone?14:24);
+        });
+
+        doc.setTextColor(...MIST_C);
+        doc.setFontSize(7);
+        doc.setFont("helvetica","normal");
+        doc.text(`${name}'s Bucket List  ·  thebucketlistai.com`, W/2, H-8, {align:"center"});
+      }
+
+      // Final page
+      doc.addPage();
+      doc.setFillColor(...INK_C);
+      doc.rect(0,0,W,H,"F");
+      doc.setFillColor(14,58,58);
+      doc.rect(20,80,170,120,"F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.4);
+      doc.rect(20,80,170,120,"S");
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(8);
+      doc.setFont("helvetica","bold");
+      doc.text("✦", W/2, 70, {align:"center"});
+      doc.setTextColor(...IVY_C);
+      doc.setFontSize(22);
+      doc.setFont("helvetica","bold");
+      doc.text("This is your list.", W/2, 96, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(9);
+      doc.setFont("helvetica","normal");
+      const closing="Not a generic collection. A list built from your values,\nyour vision, and what you said matters most.\nEvery item belongs here because you do.";
+      const closingLines=doc.splitTextToSize(closing, 140);
+      doc.text(closingLines, W/2, 112, {align:"center"});
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.line(60,140,150,140);
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(9);
+      doc.setFont("helvetica","bold");
+      doc.text("THE BUCKET LIST AI", W/2, 152, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(8);
+      doc.setFont("helvetica","normal");
+      doc.text("Your Dreams. One Lifetime.", W/2, 162, {align:"center"});
+      doc.text("thebucketlistai.com", W/2, 170, {align:"center"});
+
+      doc.save(`${(name||"my").toLowerCase().replace(/\s+/g,"-")}-bucket-list.pdf`);
+      setGenerating(false);
+      setDone(true);
+    }catch(e){
+      console.error("PDF error:",e);
+      setGenerating(false);
+      alert("PDF generation failed. Please try again.");
+    }
+  }
+
+  // ── PREMIUM PDF ─────────────────────────────────────────────────────────
+  async function generatePremiumPDF(){
+    setGenerating(true);
+    try{
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+      const W=210, H=297;
+      const GOLD=[201,168,76];
+      const INK_C=[7,30,30];
+      const IVY_C=[245,237,216];
+      const MIST_C=[160,185,180];
+      const TEAL=[14,58,58];
+
+      // ── COVER PAGE ───────────────────────────────────────────────────────
+      doc.setFillColor(...INK_C);
+      doc.rect(0,0,W,H,"F");
+
+      // Top decorative band
+      doc.setFillColor(...TEAL);
+      doc.rect(0,0,W,8,"F");
+      doc.setFillColor(...GOLD);
+      doc.rect(0,8,W,1.5,"F");
+
+      // Header
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("THE BUCKET LIST AI  ✦  THEBUCKETLISTAI.COM", W/2, 24, {align:"center"});
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.2);
+      doc.line(40,28,170,28);
+
+      // Name
+      doc.setTextColor(...IVY_C);
+      doc.setFontSize(52);
+      doc.setFont("helvetica","bold");
+      const nameText=name+"'s";
+      doc.text(nameText, W/2, 100, {align:"center"});
+
+      // Title
+      doc.setFontSize(28);
+      doc.setFont("helvetica","normal");
+      doc.setTextColor(...IVY_C);
+      doc.text("Bucket List", W/2, 118, {align:"center"});
+
+      // Gold rule
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.6);
+      doc.line(55,128,155,128);
+
+      // Subtitle
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(8);
+      doc.setFont("helvetica","bold");
+      doc.text("ONE WILD AND PRECIOUS LIFE", W/2, 138, {align:"center"});
+
+      // Stats panel
+      doc.setFillColor(...TEAL);
+      doc.rect(30,152,150,52,"F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.rect(30,152,150,52,"S");
+
+      // Divider in stats
+      doc.setDrawColor(201,168,76);
+      doc.setLineWidth(0.2);
+      doc.line(105,158,105,198);
+
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(28);
+      doc.setFont("helvetica","bold");
+      doc.text(String(count), 67, 178, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("LIFE EXPERIENCES", 67, 188, {align:"center"});
+
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(28);
+      doc.setFont("helvetica","bold");
+      doc.text(String(doneCount||0), 143, 178, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("COMPLETED", 143, 188, {align:"center"});
+
+      // Profile summary if answers exist
+      if(ans.stage||ans.location){
+        doc.setTextColor(...MIST_C);
+        doc.setFontSize(8);
+        doc.setFont("helvetica","italic");
+        const profile=[ans.location,ans.stage].filter(Boolean).join("  ·  ");
+        doc.text(profile, W/2, 220, {align:"center"});
+      }
+
+      // Bottom decoration
+      doc.setFillColor(...GOLD);
+      doc.rect(0,H-9,W,1.5,"F");
+      doc.setFillColor(...TEAL);
+      doc.rect(0,H-9,W,9,"F");
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("PREMIUM EDITION  ✦  Generated "+new Date().toLocaleDateString("en-US",{month:"long",year:"numeric"}), W/2, H-3, {align:"center"});
+
+      // ── EXPERIENCE PAGES ─────────────────────────────────────────────────
+      const byCategory={};
+      items.forEach(item=>{
+        const cat=item.category||"Adventures";
+        if(!byCategory[cat]) byCategory[cat]=[];
+        byCategory[cat].push(item);
+      });
+
+      const CAT_ICONS={"Travel & Culture":"✈","Adventure & Outdoors":"⛰","Food & Drink":"◎","Wellness & Mindfulness":"✧","Creative & Arts":"◇","Personal Growth":"✦","Learning & Skills":"◑","Relationships & Connection":"♡"};
+
+      for(const [cat,catItems] of Object.entries(byCategory)){
+        // Category title page (mini)
+        doc.addPage();
+        doc.setFillColor(...INK_C);
+        doc.rect(0,0,W,H,"F");
+
+        // Category header band
+        doc.setFillColor(...TEAL);
+        doc.rect(0,0,W,36,"F");
+        doc.setFillColor(...GOLD);
+        doc.rect(0,36,W,1.5,"F");
+
+        const icon=CAT_ICONS[cat]||"✦";
+        doc.setTextColor(...GOLD);
+        doc.setFontSize(14);
+        doc.setFont("helvetica","bold");
+        doc.text(icon, 20, 22);
+        doc.setTextColor(...IVY_C);
+        doc.setFontSize(14);
+        doc.setFont("helvetica","bold");
+        doc.text(cat.toUpperCase(), 32, 22);
+        doc.setTextColor(...MIST_C);
+        doc.setFontSize(8);
+        doc.setFont("helvetica","normal");
+        doc.text(`${catItems.length} experience${catItems.length!==1?"s":""}`, 190, 22, {align:"right"});
+
+        let y=50;
+        catItems.forEach((item,idx)=>{
+          if(y>H-45){
+            doc.addPage();
+            doc.setFillColor(...INK_C);
+            doc.rect(0,0,W,H,"F");
+            // Repeat category mini-header
+            doc.setFillColor(...TEAL);
+            doc.rect(0,0,W,14,"F");
+            doc.setTextColor(...GOLD);
+            doc.setFontSize(7);
+            doc.setFont("helvetica","bold");
+            doc.text(cat.toUpperCase()+" (cont.)", 20, 9);
+            y=22;
+          }
+
+          const isDone=item.done;
+          const cardH=isDone?24:(item.why?58:44);
+
+          // Card background
+          doc.setFillColor(isDone?10:14, isDone?35:58, isDone?35:58);
+          doc.rect(16,y-2,178,cardH,"F");
+          if(!isDone){
+            doc.setDrawColor(...GOLD);
+            doc.setLineWidth(0.15);
+            doc.rect(16,y-2,178,cardH,"S");
+            // Gold left accent
+            doc.setFillColor(...GOLD);
+            doc.rect(16,y-2,2,cardH,"F");
+          }
+
+          // Number
+          doc.setTextColor(isDone?100:201, isDone?110:168, isDone?110:76);
+          doc.setFontSize(7);
+          doc.setFont("helvetica","bold");
+          doc.text(String(idx+1).padStart(2,"0"), 22, y+5);
+
+          // Checkbox
+          doc.setDrawColor(...GOLD);
+          doc.setLineWidth(0.4);
+          doc.rect(31,y,5.5,5.5);
+          if(isDone){
+            doc.setFillColor(...GOLD);
+            doc.rect(31,y,5.5,5.5,"F");
+            doc.setTextColor(...INK_C);
+            doc.setFontSize(6);
+            doc.text("✓",32.2,y+4.2);
+          }
+
+          // Title
+          doc.setTextColor(isDone?MIST_C:IVY_C);
+          doc.setFontSize(11);
+          doc.setFont("helvetica","bold");
+          const titleLines=doc.splitTextToSize(item.title, 120);
+          doc.text(titleLines[0], 40, y+5);
+
+          // Location + difficulty on right
+          if(item.location){
+            doc.setTextColor(...GOLD);
+            doc.setFontSize(7);
+            doc.setFont("helvetica","normal");
+            doc.text("📍 "+item.location.split(",")[0], 190, y+5, {align:"right"});
+          }
+          if(item.difficulty&&!isDone){
+            doc.setTextColor(...MIST_C);
+            doc.setFontSize(6.5);
+            doc.setFont("helvetica","bold");
+            doc.text(item.difficulty, 190, y+12, {align:"right"});
+          }
+
+          if(!isDone){
+            // Description
+            if(item.description){
+              doc.setTextColor(...MIST_C);
+              doc.setFontSize(8);
+              doc.setFont("helvetica","italic");
+              const descLines=doc.splitTextToSize(item.description, 150);
+              doc.text(descLines[0], 40, y+14);
+            }
+
+            // Why
+            if(item.why){
+              doc.setTextColor(180,155,60);
+              doc.setFontSize(7.5);
+              doc.setFont("helvetica","normal");
+              const whyText="→ "+item.why;
+              const whyLines=doc.splitTextToSize(whyText, 150);
+              doc.text(whyLines[0], 40, y+24);
+            }
+
+            // Next Steps (first one)
+            if(item.nextSteps&&item.nextSteps.length){
+              doc.setTextColor(...MIST_C);
+              doc.setFontSize(7);
+              doc.setFont("helvetica","normal");
+              const step1="First step: "+item.nextSteps[0];
+              const stepLines=doc.splitTextToSize(step1, 150);
+              doc.text(stepLines[0], 40, item.why?y+34:y+24);
+            }
+
+            // Booking link label
+            const affUrl=getAffiliateUrl(item);
+            doc.setTextColor(...GOLD);
+            doc.setFontSize(6.5);
+            doc.setFont("helvetica","bold");
+            doc.textWithLink("Book / Research this experience →", 40, item.why?y+44:y+36, {url:affUrl});
+          }
+
+          y+=cardH+6;
+        });
+
+        // Page footer
+        doc.setTextColor(...MIST_C);
+        doc.setFontSize(7);
+        doc.setFont("helvetica","normal");
+        doc.text(`${name}'s Bucket List  ·  ${cat}  ·  thebucketlistai.com`, W/2, H-6, {align:"center"});
+      }
+
+      // ── FINAL REFLECTION PAGE ────────────────────────────────────────────
+      doc.addPage();
+      doc.setFillColor(...INK_C);
+      doc.rect(0,0,W,H,"F");
+
+      doc.setFillColor(...TEAL);
+      doc.rect(20,60,170,160,"F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.4);
+      doc.rect(20,60,170,160,"S");
+
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(10);
+      doc.text("✦", W/2, 50, {align:"center"});
+
+      doc.setTextColor(...IVY_C);
+      doc.setFontSize(22);
+      doc.setFont("helvetica","bold");
+      doc.text("This is your list.", W/2, 80, {align:"center"});
+
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(10);
+      doc.setFont("helvetica","normal");
+      const r1="Not a generic collection of experiences.";
+      const r2="A list built from your values, your vision, and what you said matters most.";
+      const r3="Every item belongs here because you do.";
+      doc.text(r1, W/2, 96, {align:"center"});
+      doc.text(r2, W/2, 108, {align:"center"});
+      doc.text(r3, W/2, 120, {align:"center"});
+
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.line(60,132,150,132);
+
+      if(ans.regret){
+        doc.setTextColor(180,155,60);
+        doc.setFontSize(9);
+        doc.setFont("helvetica","italic");
+        const valLines=doc.splitTextToSize("\""+ans.regret+"\"", 140);
+        valLines.slice(0,3).forEach((line,i)=>{
+          doc.text(line, W/2, 142+(i*12), {align:"center"});
+        });
+      }
+
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(9);
+      doc.setFont("helvetica","bold");
+      doc.text("THE BUCKET LIST AI", W/2, 196, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(8);
+      doc.setFont("helvetica","normal");
+      doc.text("Your Dreams. One Lifetime.  ·  thebucketlistai.com", W/2, 206, {align:"center"});
+
+      doc.save(`${(name||"my").toLowerCase().replace(/\s+/g,"-")}-premium-bucket-list.pdf`);
+      setGenerating(false);
+      setPremiumDone(true);
+    }catch(e){
+      console.error("Premium PDF error:",e);
+      setGenerating(false);
+      alert("PDF generation failed. Please try again.");
+    }
+  }
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.88)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:24,overflowY:"auto"}} onClick={onClose}>
+      <div style={{background:"#0A2828",border:"1px solid rgba(201,168,76,.4)",maxWidth:560,width:"100%",borderRadius:2,overflow:"hidden"}} onClick={e=>e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{background:"linear-gradient(135deg,#071E1E,#0E3A3A)",padding:"24px 28px 0",borderBottom:"1px solid rgba(201,168,76,.15)"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+            <div style={{fontSize:9,fontWeight:700,letterSpacing:".22em",color:G,fontFamily:SANS,textTransform:"uppercase"}}>Download Your List</div>
+            <button onClick={onClose} style={{background:"none",border:"none",color:MIST,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+          </div>
+
+          {/* Tab switcher */}
+          <div style={{display:"flex",gap:0,borderBottom:"1px solid rgba(201,168,76,.15)"}}>
+            {[["free","Free PDF"],["premium","✦ Premium PDF — $9.99"]].map(([key,label])=>(
+              <button key={key} onClick={()=>setTab(key)}
+                style={{flex:key==="premium"?1.4:1,padding:"12px 16px",background:"none",border:"none",borderBottom:`2px solid ${tab===key?G:"transparent"}`,color:tab===key?G:MIST,fontSize:key==="premium"?12:11,fontWeight:700,letterSpacing:".1em",cursor:"pointer",fontFamily:SANS,textTransform:"uppercase",transition:"all .2s"}}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{padding:"24px 28px"}}>
+
+          {/* ── FREE TAB ── */}
+          {tab==="free"&&(
+            <>
+              {/* Mini preview */}
+              <div style={{background:"#041212",border:"1px solid rgba(201,168,76,.2)",padding:"16px",marginBottom:20,position:"relative"}}>
+                <div style={{height:1,background:`linear-gradient(to right,transparent,${G},transparent)`,marginBottom:10}}/>
+                <div style={{textAlign:"center",marginBottom:10}}>
+                  <div style={{fontSize:8,color:G,letterSpacing:".2em",fontFamily:SANS,fontWeight:700,marginBottom:4}}>THE BUCKET LIST AI</div>
+                  <div style={{fontFamily:SERIF,fontSize:20,color:IVY,letterSpacing:-1,lineHeight:1.1,marginBottom:2}}>{name}'s</div>
+                  <div style={{fontFamily:SERIF,fontSize:16,color:IVY,letterSpacing:-1}}>Bucket List</div>
+                  <div style={{height:1,background:G,margin:"6px 40px",opacity:.5}}/>
+                  <div style={{fontSize:7,color:G,letterSpacing:".16em",fontFamily:SANS}}>ONE WILD AND PRECIOUS LIFE</div>
+                </div>
+                {items.slice(0,3).map((item,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"3px 0",borderBottom:"1px solid rgba(201,168,76,.07)"}}>
+                    <div style={{width:7,height:7,border:`1px solid ${G}`,flexShrink:0}}/>
+                    <div style={{fontSize:8,color:IVY,fontFamily:SANS,fontWeight:600,flex:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{item.title}</div>
+                    <div style={{fontSize:7,color:G,fontFamily:SANS,whiteSpace:"nowrap"}}>{item.location?.split(",")[0]}</div>
+                  </div>
+                ))}
+                <div style={{textAlign:"center",marginTop:5}}>
+                  <span style={{fontSize:7,color:MIST,fontFamily:SANS}}>+ {Math.max(0,count-3)} more experiences</span>
+                </div>
+              </div>
+
+              <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:20}}>
+                {["Title + location for each item","Organized by category","Printable at home","Clean dark design"].map(f=>(
+                  <div key={f} style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:MIST,fontFamily:SANS}}>
+                    <span style={{color:G}}>✓</span>{f}
+                  </div>
+                ))}
+              </div>
+
+              {!done?(
+                <>
+                  <button onClick={generateFreePDF} disabled={generating} className="btn-gold"
+                    style={{width:"100%",background:generating?"rgba(201,168,76,.3)":G,border:"none",color:generating?G:INK,padding:"15px 24px",fontSize:12,fontWeight:700,letterSpacing:".16em",textTransform:"uppercase",cursor:generating?"not-allowed":"pointer",fontFamily:SANS,display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:10}}>
+                    {generating?<><div style={{width:15,height:15,border:`2px solid ${G}`,borderTopColor:"transparent",borderRadius:"50%",animation:"spin 1s linear infinite"}}/> Generating…</>:"⬇ Download Free PDF"}
+                  </button>
+                  <div style={{textAlign:"center",marginBottom:16}}>
+                    <button onClick={()=>setTab("premium")} style={{background:"none",border:"none",color:G,fontSize:11,fontFamily:SANS,cursor:"pointer",letterSpacing:".08em"}}>
+                      Want photos, booking links & your 'why'? → Upgrade for $9.99
+                    </button>
+                  </div>
+                </>
+              ):(
+                <div style={{textAlign:"center",padding:"16px 0"}}>
+                  <div style={{fontSize:32,marginBottom:10}}>🎉</div>
+                  <div style={{fontFamily:SERIF,fontSize:22,color:IVY,marginBottom:8,fontWeight:400}}>Your PDF is ready!</div>
+                  <p style={{fontSize:13,color:MIST,fontFamily:SANS,lineHeight:1.7,marginBottom:20}}>Check your downloads. Print it, frame it, or share it.</p>
+                  <button onClick={()=>setTab("premium")} className="btn-gold"
+                    style={{background:G,border:"none",color:INK,padding:"14px 32px",fontSize:11,fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,marginBottom:12}}>
+                    ✦ Upgrade to Premium PDF — $9.99
+                  </button>
+                  <br/>
+                  <button onClick={onClose} style={{background:"none",border:"1px solid rgba(201,168,76,.3)",color:MIST,padding:"10px 28px",fontSize:11,cursor:"pointer",fontFamily:SANS,letterSpacing:".12em",textTransform:"uppercase",marginTop:8}}>
+                    Back to My List
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ── PREMIUM TAB ── */}
+          {tab==="premium"&&(
+            <>
+              {/* Premium preview mockup */}
+              <div style={{background:"#041212",border:"1px solid rgba(201,168,76,.35)",padding:"16px",marginBottom:20,position:"relative",overflow:"hidden"}}>
+                <div style={{background:"linear-gradient(to right,rgba(14,58,58,1),rgba(7,30,30,.3))",height:6,margin:"-16px -16px 12px",borderBottom:"2px solid rgba(201,168,76,.6)"}}/>
+                <div style={{textAlign:"center",marginBottom:10}}>
+                  <div style={{fontSize:7,color:G,letterSpacing:".2em",fontFamily:SANS,fontWeight:700,marginBottom:3}}>THE BUCKET LIST AI  ✦  PREMIUM EDITION</div>
+                  <div style={{fontFamily:SERIF,fontSize:22,color:IVY,letterSpacing:-1,lineHeight:1.0,marginBottom:2}}>{name}'s</div>
+                  <div style={{fontFamily:SERIF,fontSize:17,color:IVY}}>Bucket List</div>
+                  <div style={{height:1.5,background:G,margin:"6px 30px"}}/>
+                </div>
+                {items.slice(0,2).map((item,i)=>(
+                  <div key={i} style={{background:"rgba(14,58,58,.8)",border:"1px solid rgba(201,168,76,.25)",borderLeft:"2px solid rgba(201,168,76,.8)",padding:"8px 10px",marginBottom:6}}>
+                    <div style={{fontSize:9,color:IVY,fontFamily:SANS,fontWeight:700,marginBottom:3}}>{item.title}</div>
+                    {item.description&&<div style={{fontSize:7.5,color:MIST,fontFamily:SANS,fontStyle:"italic",marginBottom:3,lineHeight:1.4}}>{item.description?.slice(0,80)}...</div>}
+                    <div style={{fontSize:7,color:G,fontFamily:SANS}}>→ {item.why?.slice(0,60)||"Personalized reason for you"}...</div>
+                    <div style={{fontSize:7,color:"rgba(201,168,76,.6)",fontFamily:SANS,marginTop:3}}>📍 {item.location}  ·  Book this experience →</div>
+                  </div>
+                ))}
+                <div style={{textAlign:"center",marginTop:6,fontSize:7,color:MIST,fontFamily:SANS}}>+ {Math.max(0,count-2)} more with full details</div>
+              </div>
+
+              {/* Feature comparison */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:20}}>
+                {[
+                  ["✓","Title + Location","✓","Title + Location"],
+                  ["✓","Category sections","✓","Category sections with icons"],
+                  ["–","Personalized 'why'","✓","Your 'why' for every item"],
+                  ["–","Next steps","✓","First actionable step per item"],
+                  ["–","Booking links","✓","Direct affiliate links embedded"],
+                  ["–","Your values quoted","✓","Your words on the final page"],
+                ].slice(0,6).map(([fIcon,fLabel,pIcon,pLabel],i)=>(
+                  <React.Fragment key={i}>
+                    <div style={{fontSize:11,color:i<2?G:MIST,fontFamily:SANS,display:"flex",alignItems:"center",gap:5}}>
+                      <span style={{color:i<2?G:"rgba(245,237,216,.25)",minWidth:12}}>{fIcon}</span>{fLabel}
+                    </div>
+                    <div style={{fontSize:11,color:G,fontFamily:SANS,display:"flex",alignItems:"center",gap:5}}>
+                      <span style={{color:G,minWidth:12}}>{pIcon}</span>{pLabel}
+                    </div>
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {!premiumDone?(
+                <>
+                  <div style={{background:"rgba(201,168,76,.06)",border:"1px solid rgba(201,168,76,.2)",padding:"16px 20px",marginBottom:16,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div>
+                      <div style={{fontFamily:SERIF,fontSize:20,color:IVY}}>Premium PDF</div>
+                      <div style={{fontSize:11,color:MIST,fontFamily:SANS}}>One-time · Instant download</div>
+                    </div>
+                    <div style={{fontFamily:SERIF,fontSize:28,color:G}}>$9.99</div>
+                  </div>
+
+                  {/* If Stripe link is configured, show payment button. Otherwise show direct generate. */}
+                  {STRIPE_LINK.includes("REPLACE")?(
+                    <>
+                      <button onClick={generatePremiumPDF} disabled={generating} className="btn-gold"
+                        style={{width:"100%",background:generating?"rgba(201,168,76,.3)":G,border:"none",color:generating?G:INK,padding:"16px 24px",fontSize:13,fontWeight:700,letterSpacing:".16em",textTransform:"uppercase",cursor:generating?"not-allowed":"pointer",fontFamily:SANS,display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:10}}>
+                        {generating?<><div style={{width:15,height:15,border:`2px solid ${G}`,borderTopColor:"transparent",borderRadius:"50%",animation:"spin 1s linear infinite"}}/> Generating Premium PDF…</>:"⬇ Generate Premium PDF"}
+                      </button>
+                      <p style={{fontSize:10,color:MIST,fontFamily:SANS,textAlign:"center",opacity:.6}}>
+                        (Payment coming soon — generating free during launch)
+                      </p>
+                    </>
+                  ):(
+                    <>
+                      <button onClick={goToPremium} className="btn-gold"
+                        style={{width:"100%",background:G,border:"none",color:INK,padding:"16px 24px",fontSize:13,fontWeight:700,letterSpacing:".16em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:10}}>
+                        ✦ Unlock Premium PDF — $9.99
+                      </button>
+                      <p style={{fontSize:10,color:MIST,fontFamily:SANS,textAlign:"center",opacity:.7}}>
+                        Secure payment via Stripe · Opens in new tab · Then download instantly
+                      </p>
+                    </>
+                  )}
+                </>
+              ):(
+                <div style={{textAlign:"center",padding:"16px 0"}}>
+                  <div style={{fontSize:32,marginBottom:10}}>⭐</div>
+                  <div style={{fontFamily:SERIF,fontSize:22,color:IVY,marginBottom:8,fontWeight:400}}>Premium PDF ready!</div>
+                  <p style={{fontSize:13,color:MIST,fontFamily:SANS,lineHeight:1.7,marginBottom:20}}>Your full personalized list with every detail. Print it, frame it, live it.</p>
+                  <button onClick={onClose} style={{background:"none",border:"1px solid rgba(201,168,76,.3)",color:MIST,padding:"10px 28px",fontSize:11,cursor:"pointer",fontFamily:SANS,letterSpacing:".12em",textTransform:"uppercase"}}>
+                    Back to My List
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ShareModal({items,ans,onClose}){
   const url=buildShareUrl(items,ans);
   const [copied,setCopied]=useState(false);
@@ -457,6 +1198,7 @@ function App(){
   const [txt,      setTxt]      = useState("");
   const [items,    setItems]    = useState([]);
   const [meta,     setMeta]     = useState({});
+  const [synthesis,setSynthesis]= useState("");
   const [gmsg,     setGmsg]     = useState(GMSGS[0]);
   const [filter,   setFilter]   = useState("All");
   const [sortBy,   setSortBy]   = useState("default");
@@ -467,6 +1209,7 @@ function App(){
   const [showAdd,  setShowAdd]  = useState(false);
   const [showEmail,setShowEmail]= useState(false);
   const [showShare,setShowShare]= useState(false);
+  const [showPDF,  setShowPDF]  = useState(false);
   const [milestone,setMilestone]= useState(null);
   const [isShared, setIsShared] = useState(false);
   const [error,    setError]    = useState(null);
@@ -492,6 +1235,28 @@ function App(){
     // Load from localStorage
     const d=LS.get("bl-v9");
     if(d?.items){setItems(d.items);setAns(d.ans||{});setMeta(d.meta||{});setMode(d.mode||"personal");setScreen("list");return;}
+    // Stripe payment success — auto-open premium PDF modal
+    const premiumSuccess=params.get("premium");
+    if(premiumSuccess==="1"){
+      // Try to restore list from sessionStorage if current list is empty
+      try{
+        const pending=sessionStorage.getItem("bl-premium-pending");
+        if(pending){
+          const {items:savedItems,ans:savedAns}=JSON.parse(pending);
+          if(savedItems?.length){
+            setItems(savedItems);
+            setAns(savedAns||{});
+            setScreen("list");
+            setTimeout(()=>setShowPDF(true),800);
+            sessionStorage.removeItem("bl-premium-pending");
+            return;
+          }
+        }
+      }catch(e){}
+      // If list already in state, just open PDF modal to premium tab
+      setTimeout(()=>setShowPDF(true),800);
+      return;
+    }
     // Load mode from URL
     const urlMode=params.get("mode");
     if(urlMode&&["personal","couple","family","surprise"].includes(urlMode))
@@ -516,35 +1281,112 @@ function App(){
       :"This is a personal bucket list.";
 
     const personContext = [
-      a.name ? `Name: ${a.name}` : "",
-      a.location ? `Location: ${a.location}` : "",
-      a.stage ? `Life stage: ${a.stage}` : "",
-      a.regret ? `What matters most / values: "${a.regret}"` : "",
-      a.future ? `10-year vision: "${a.future}"` : "",
-      a.categories?.length ? `Wants experiences in: ${a.categories.join(", ")}` : "",
-      a.difficulty?.length ? `Experience types preferred: ${a.difficulty.join(", ")}` : "",
+      a.name     ? `Name: ${a.name}` : "",
+      a.location ? `Home city / country: ${a.location}` : "",
+      a.stage    ? `Life stage: ${a.stage}` : "",
+      a.regret   ? `What they want their life to have been about (their deepest values): "${a.regret}"` : "",
+      a.future   ? `Their 10-year vision — what success looks like: "${a.future}"` : "",
+      a.fear     ? `The one thing they keep postponing (MUST appear on the list): "${a.fear}"` : "",
+      a.categories?.length ? `Experience types they want: ${a.categories.join(", ")}` : "",
+      a.difficulty?.length ? `Timeframe they want experiences in: ${a.difficulty.join(", ")}` : "",
     ].filter(Boolean).join("\n");
 
-    const prompt=`You are a deeply personalised life coach building a bucket list for ${a.name||"someone special"}.
+    // Build difficulty distribution instruction
+    const diffMap = {
+      "Something this weekend": "This Weekend",
+      "A goal for this year": "This Year",
+      "A big challenge to work toward": "Epic Goal",
+      "A dream for one day": "Lifetime Dream",
+    };
+    const chosenDiffs = (a.difficulty||[]).map(d=>diffMap[d]||d);
+    const diffInstruction = chosenDiffs.length
+      ? `DIFFICULTY DISTRIBUTION: The person chose: ${chosenDiffs.join(", ")}. Distribute items accordingly — if they chose "This Weekend" and "This Year", at least 40% of items must have those difficulties. Do NOT give someone who wants weekend adventures mostly Lifetime Dreams.`
+      : "Include a healthy mix of difficulty levels.";
+
+    const surpriseInstruction = mode==="surprise"
+      ? "SURPRISE MODE: Include 3-5 items they would never have thought of themselves but will read and think 'how did it know?' — things that arise naturally from their values and vision but are unexpected. Label these with difficulty 'Epic Goal' or 'Lifetime Dream'."
+      : "";
+
+    const prompt=`You are the world's most perceptive life coach and experience curator. You are building a personalised bucket list for ${a.name||"someone special"}.
 ${modeCtx}
 
-PERSON PROFILE:
+═══ THEIR PROFILE ═══
 ${personContext}
 
-YOUR MISSION:
-Build a list that could ONLY belong to this specific person. Not a generic list with their name on it — a list that reflects who they are, where they are in life, what they value, and where they want to go.
+═══ YOUR MISSION ═══
+Build a list that could ONLY belong to this exact person. Not a generic list with their name on it.
+Every single item must connect to something real they shared — their specific words, their vision, their values, their location, or the thing they keep postponing.
 
-RULES FOR EVERY ITEM:
-1. TITLE: Specific, not generic. Not "Visit Japan" — "Spend Two Weeks in Kyoto During Cherry Blossom Season". Max 10 words.
-2. LOCATION: Real, specific place. Use ${a.location||"their region"} as a starting point — include 3-5 experiences genuinely accessible from there.
-3. DESCRIPTION: One sentence that references THIS person's values or vision. Make it feel written for them, not copied from a template.
-4. WHY: One sentence that connects this item directly to something they said — their values, their vision, their life stage. Quote or reference their actual words where possible.
-5. NEXT STEPS: Three specific, actionable steps tailored to their location and life stage. Not "research online" — real steps like "Check flights from ${a.location||"your city"} to..." or "Look up the specific permit required for..." The steps should feel like advice from a friend who knows them.
-6. DIFFICULTY: Match to what they said they want — if they chose "This Weekend" experiences, include some. If they want "Lifetime Dreams", make them epic.
-${mode==="surprise"?"SURPRISE: Include some unexpected items they would never have thought of themselves but will immediately recognise as perfect for them.":""}
+${diffInstruction}
 
-Return ONLY a valid JSON array of exactly ${count} items. No markdown, no explanation, no backticks. Just the array:
-[{"id":"unique-slug","title":"Specific Title Here","location":"City, Country or Region","category":"one of: ${CAT_KEYS.join(",")}","difficulty":"one of: This Weekend,This Year,Epic Goal,Lifetime Dream","description":"One sentence referencing their specific values or vision.","why":"Because [direct connection to what they said matters to them].","nextSteps":["Specific actionable step 1 for someone in ${a.location||"their location"}","Specific actionable step 2 tailored to their life stage","Specific actionable step 3 with real details not generic advice"]}]`;
+${surpriseInstruction}
+
+═══ QUALITY RULES — READ THESE CAREFULLY ═══
+
+RULE 1 — SPECIFICITY (most important rule):
+❌ BAD: "Travel to Japan"
+❌ BAD: "Go on a safari"
+❌ BAD: "Learn a new language"
+✅ GOOD: "Spend 12 Days Driving the Amalfi Coast in a Convertible"
+✅ GOOD: "Track Leopards at Londolozi Private Game Reserve, Sabi Sands"
+✅ GOOD: "Reach B2 French and Spend a Month in Lyon Without Speaking English"
+The title must name the specific place, operator, experience, or achievement — not the generic category.
+
+RULE 2 — ECHO THEIR EXACT WORDS BACK TO THEM:
+The description and why fields must make the person feel seen. The technique: find the most specific phrase they used, and build the item around it.
+
+❌ BAD description: "A chance to experience something extraordinary."
+❌ BAD why: "Because you value adventure and new experiences."
+✅ GOOD description (if they wrote "I want to have taken my kids to see the places I grew up hearing about"):
+   "This is the trip you grew up hearing about — now you're the one describing it to your kids on the plane."
+✅ GOOD why (if they wrote "I want to wake up near the ocean"):
+   "Because your Tuesday morning starts near water in the life you described — this is where that version of you begins."
+✅ GOOD why (if they wrote a specific fear about running a marathon):
+   "Because you've signed up twice and not done it — this is the version where you actually cross the finish line."
+
+Find one specific phrase from what they wrote. Make the why field feel like you read their mind.
+
+RULE 3 — DESCRIPTIONS MUST SOUND LIKE CONVERSATION, NOT MARKETING COPY:
+❌ BAD: "An unforgettable journey through the heart of Southeast Asia."
+❌ BAD: "A transformative experience that will stay with you forever."  
+✅ GOOD: "Three weeks of slow travel where you don't have a plan past the first city — the kind you keep describing to people and then not booking."
+✅ GOOD: "The marathon you've been almost ready for since 2019. This is the year the training plan actually runs to completion."
+Write like a perceptive friend who listened carefully, not a travel brochure.
+
+RULE 4 — NEXT STEPS MUST BE ACTIONABLE FROM WHERE THEY LIVE:
+❌ BAD: "Research options online."
+❌ BAD: "Book a flight."
+✅ GOOD: "Check direct flights from ${a.location||"your city"} — British Airways and Emirates both fly direct. Budget £900 return in shoulder season."
+✅ GOOD: "The Inca Trail lottery opens February 1 each year — set a reminder now. Operators: G Adventures and Intrepid both have licensed spots."
+Each next step should feel like advice from a friend who knows them AND knows the destination.
+
+RULE 5 — THE POSTPONED THING MUST APPEAR:
+${a.fear ? `They specifically said they keep postponing: "${a.fear}". This MUST appear as one of the items, treated with the same specificity and care as everything else. Make it feel like permission — not a chore.` : "If they shared something they keep putting off, make sure it appears."}
+
+RULE 6 — LOCATION GROUNDING:
+Include 2-4 items that are genuinely accessible from ${a.location||"their home"} — things they could do without a long-haul flight. This makes the list feel real, not aspirational tourism.
+
+═══ OUTPUT FORMAT ═══
+Return your response in EXACTLY this structure — nothing else:
+
+SYNTHESIS: [Write 2-3 sentences in second person, spoken directly to ${a.name||"them"}. This is your synthesis of who they are based on everything they shared. Reference their specific words. Sound like a brilliant friend who listened carefully, not a therapist or a brochure. Example: "What strikes me about you, Sarah, is that you're not chasing novelty — you're chasing the feeling of being fully present in your own life. Your vision of that Tuesday morning near the ocean isn't about escape, it's about arrival. This list is built around that."]
+
+JSON: [A valid JSON array of exactly ${count} items — no markdown, no backticks, pure JSON]
+
+[{
+  "id": "unique-kebab-slug",
+  "title": "Specific Named Experience — Max 10 Words",
+  "location": "Named City, Country or Specific Region",
+  "category": "one of: ${CAT_KEYS.join(",")}",
+  "difficulty": "one of: This Weekend,This Year,Epic Goal,Lifetime Dream",
+  "description": "One sentence that references this person's specific values, words, or vision. Written for them personally, not as a template.",
+  "why": "Because [direct reference to something specific they wrote or their life stage truth].",
+  "nextSteps": [
+    "Specific step 1 — named operator, real cost, or actual logistics from ${a.location||"their location"}",
+    "Specific step 2 — timing, permit, booking window, or preparation needed",
+    "Specific step 3 — the human detail that makes this feel possible rather than abstract"
+  ]
+}]`;
 
     try{
       const res=await fetch("/.netlify/functions/generate",{
@@ -556,7 +1398,12 @@ Return ONLY a valid JSON array of exactly ${count} items. No markdown, no explan
       if(!res.ok){let m=`API error ${res.status}`;try{m=JSON.parse(raw)?.error?.message||m;}catch{}throw new Error(m);}
       const data=JSON.parse(raw);
       if(data.error) throw new Error(data.error.message);
-      const txt2=data.content?.find(b=>b.type==="text")?.text||"[]";
+      const txt2=data.content?.find(b=>b.type==="text")?.text||"";
+      // Extract synthesis paragraph
+      const synthMatch=txt2.match(/SYNTHESIS:\s*([\s\S]*?)(?=JSON:|\[)/i);
+      const synthText=(synthMatch?.[1]||"").trim().replace(/^\[|\]$/g,"").trim();
+      if(synthText) setSynthesis(synthText);
+      // Extract JSON array
       const match=txt2.match(/\[[\s\S]*\]/);
       if(!match) throw new Error("No JSON array in response");
       // Repair truncated JSON — close any open array/object
@@ -666,7 +1513,7 @@ Return ONLY a valid JSON array of exactly ${count} items. No markdown, no explan
   function closeNote(id){setMeta(p=>({...p,[id]:{...gm(id),noteOpen:false}}));}
   function saveNote(id){setMeta(p=>({...p,[id]:{...gm(id),note:noteDraft[id]||"",noteOpen:false}}));}
   function removeItem(id){setItems(p=>p.filter(i=>i.id!==id));}
-  function reset(){setScreen("hero");setItems([]);setMeta({});setAns({});setMode(null);setStep(0);LS.set("bl-v9",null);}
+  function reset(){setScreen("hero");setItems([]);setMeta({});setSynthesis("");setAns({});setMode(null);setStep(0);LS.set("bl-v9",null);}
 
   /* ── FILTERED/SORTED LIST ────────────────────────────────────── */
   const displayed=React.useMemo(()=>{
@@ -767,6 +1614,28 @@ Return ONLY a valid JSON array of exactly ${count} items. No markdown, no explan
 
         <div style={{maxWidth:600,width:"100%",animation:"riseIn .5s cubic-bezier(.22,1,.36,1) both"}}>
           <Logo/>
+          {/* Step affirmation — shows after emotional steps */}
+          {step===3&&ans.regret&&(
+            <div style={{marginTop:28,padding:"12px 20px",background:"rgba(201,168,76,.07)",border:`1px solid rgba(201,168,76,.2)`,borderLeft:`2px solid ${G}`,marginBottom:-8}}>
+              <p style={{fontSize:12,color:G,fontFamily:SANS,fontWeight:300,fontStyle:"italic",lineHeight:1.6}}>
+                ✦ Good. That's the kind of detail that makes a list feel like yours.
+              </p>
+            </div>
+          )}
+          {step===4&&ans.future&&(
+            <div style={{marginTop:28,padding:"12px 20px",background:"rgba(201,168,76,.07)",border:`1px solid rgba(201,168,76,.2)`,borderLeft:`2px solid ${G}`,marginBottom:-8}}>
+              <p style={{fontSize:12,color:G,fontFamily:SANS,fontWeight:300,fontStyle:"italic",lineHeight:1.6}}>
+                ✦ That's a clear picture. We'll build toward exactly that.
+              </p>
+            </div>
+          )}
+          {step===5&&ans.fear&&(
+            <div style={{marginTop:28,padding:"12px 20px",background:"rgba(201,168,76,.07)",border:`1px solid rgba(201,168,76,.2)`,borderLeft:`2px solid ${G}`,marginBottom:-8}}>
+              <p style={{fontSize:12,color:G,fontFamily:SANS,fontWeight:300,fontStyle:"italic",lineHeight:1.6}}>
+                ✦ That's going on the list. No more almost.
+              </p>
+            </div>
+          )}
           <div style={{marginTop:40,textAlign:"center",marginBottom:32}}>
             <div style={{fontSize:10,fontWeight:600,letterSpacing:".28em",textTransform:"uppercase",color:G,marginBottom:14}}>{s.eyebrow}</div>
             <h2 style={{fontFamily:SERIF,fontSize:"clamp(28px,5vw,52px)",fontWeight:400,color:IVY,lineHeight:1.05,letterSpacing:"-1px",marginBottom:10}}>{s.question}</h2>
@@ -940,20 +1809,28 @@ Return ONLY a valid JSON array of exactly ${count} items. No markdown, no explan
   if(screen==="generating") return(
     <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:40,position:"relative",zIndex:1,textAlign:"center"}}>
       <Logo/>
-      <div style={{marginTop:48}}>
+      <div style={{marginTop:48,maxWidth:520}}>
         <div style={{position:"relative",width:64,height:64,margin:"0 auto 32px"}}>
           <div style={{position:"absolute",inset:0,border:`1px solid ${RULE}`,borderRadius:"50%"}}/>
           <div style={{position:"absolute",inset:0,border:`2px solid transparent`,borderTopColor:G,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
           <div style={{position:"absolute",inset:8,border:`1px solid transparent`,borderTopColor:GL,borderRadius:"50%",animation:"spin .7s linear infinite reverse"}}/>
           <div style={{position:"absolute",inset:"50%",transform:"translate(-50%,-50%)",color:G,fontSize:16}}>✦</div>
         </div>
-        <h2 style={{fontFamily:SERIF,fontSize:"clamp(28px,5vw,48px)",fontWeight:400,color:IVY,marginBottom:12,letterSpacing:"-1px"}}>Building Your List</h2>
-        <p style={{fontSize:16,color:G,fontFamily:SANS,fontWeight:300,animation:"shimmer 2.4s ease infinite",minHeight:24}}>{gmsg}</p>
+        <h2 style={{fontFamily:SERIF,fontSize:"clamp(26px,4vw,42px)",fontWeight:400,color:IVY,marginBottom:16,letterSpacing:"-0.5px",lineHeight:1.15}}>
+          {ans.name ? `Building ${ans.name.split(" ")[0]}'s list…` : "Building your list…"}
+        </h2>
+        <p style={{fontSize:15,color:G,fontFamily:SANS,fontWeight:300,animation:"shimmer 2.4s ease infinite",minHeight:24,lineHeight:1.6}}>{gmsg}</p>
+        {ans.fear && (
+          <p style={{fontSize:12,color:"rgba(201,168,76,.45)",fontFamily:SANS,fontWeight:300,marginTop:16,fontStyle:"italic",lineHeight:1.6,maxWidth:380,margin:"16px auto 0"}}>
+            "{ans.fear.length > 80 ? ans.fear.slice(0,77)+"…" : ans.fear}"
+          </p>
+        )}
         <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:28}}>
           {[0,1,2].map(i=>(
             <div key={i} style={{width:8,height:8,borderRadius:"50%",background:G,animation:`pulse 1.4s ease ${i*.2}s infinite`}}/>
           ))}
         </div>
+        <p style={{fontSize:11,color:"rgba(245,237,216,.2)",fontFamily:SANS,marginTop:32,letterSpacing:".08em"}}>Building your synthesis + your full list. Takes 20–30 seconds.</p>
       </div>
     </div>
   );
@@ -973,6 +1850,7 @@ Return ONLY a valid JSON array of exactly ${count} items. No markdown, no explan
       {showAdd&&<AddDreamModal onAdd={i=>setItems(p=>[...p,i])} onClose={()=>setShowAdd(false)}/>}
       {showEmail&&<EmailModal userName={userName} onClose={()=>setShowEmail(false)}/>}
       {showShare&&<ShareModal items={items} ans={ans} onClose={()=>setShowShare(false)}/>}
+      {showPDF&&<PDFModal items={items} ans={ans} onClose={()=>setShowPDF(false)}/>}
 
       {/* Milestone banner */}
       {milestone&&(
@@ -980,6 +1858,61 @@ Return ONLY a valid JSON array of exactly ${count} items. No markdown, no explan
           <div style={{fontSize:28,color:G,marginBottom:6}}>{milestone.icon}</div>
           <div style={{fontFamily:SERIF,fontSize:22,color:IVY,letterSpacing:"-.3px",marginBottom:4}}>{milestone.msg}</div>
           <div style={{fontSize:13,color:MIST,fontFamily:SANS,fontWeight:300}}>{milestone.sub}</div>
+        </div>
+      )}
+
+
+      {/* ── 90-DAY QUEST CTA ── */}
+      {!isShared && items.length > 0 && (
+        <div style={{background:`linear-gradient(135deg,${TEAL},#0D4545)`,borderTop:`1px solid ${RULE}`,padding:"56px 24px",textAlign:"center",marginTop:40}}>
+          <div style={{maxWidth:560,margin:"0 auto"}}>
+            <div style={{fontSize:10,color:G,fontFamily:SANS,fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",marginBottom:16}}>What happens next</div>
+            <h2 style={{fontFamily:SERIF,fontSize:"clamp(26px,4vw,40px)",color:IVY,fontWeight:400,lineHeight:1.15,marginBottom:16,letterSpacing:"-.5px"}}>
+              Turn this list into<br/><em style={{color:G,fontStyle:"italic"}}>a 90-day quest.</em>
+            </h2>
+            <p style={{fontSize:15,color:MIST,fontFamily:SANS,fontWeight:300,lineHeight:1.75,marginBottom:28,maxWidth:440,margin:"0 auto 28px"}}>
+              Every week for 90 days, we'll send you one micro-mission based on your list — a single action that moves you toward the life you just described. Free. No pitch. Just momentum.
+            </p>
+            {!LS.get("bl-email") ? (
+              <div style={{display:"flex",gap:10,maxWidth:420,margin:"0 auto",flexWrap:"wrap",justifyContent:"center"}}>
+                <input
+                  id="quest-email"
+                  type="email"
+                  placeholder="your@email.com"
+                  style={{flex:1,minWidth:200,background:"rgba(255,255,255,.06)",border:`1px solid rgba(201,168,76,.3)`,padding:"14px 18px",fontSize:14,color:IVY,fontFamily:SANS,outline:"none"}}
+                  onFocus={e=>e.target.style.borderColor=G}
+                  onBlur={e=>e.target.style.borderColor="rgba(201,168,76,.3)"}
+                />
+                <button
+                  className="btn-gold"
+                  onClick={async ()=>{
+                    const email=document.getElementById("quest-email")?.value?.trim();
+                    if(!email||!email.includes("@")) return;
+                    try{
+                      await fetch("https://connect.mailerlite.com/api/subscribers",{
+                        method:"POST",
+                        headers:{"Content-Type":"application/json","Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiZjc1MzYyNzk5MDcxNGQ2Mzk5NmVkZTAzZDQ2ZGUyNTdiMDYyMTc2OThjNTEyMGNjZTkyZjc0N2VhMzFmODllMTkwY2Q3NDBmMGI4OGQyN2UiLCJpYXQiOjE3NDE2MzAzNzYuMjMxMTY2LCJuYmYiOjE3NDE2MzAzNzYuMjMxMTY3LCJleHAiOjQ4OTczMDgzNzYuMjI5MDcsInN1YiI6IjEzMjg5OTYiLCJzY29wZXMiOltdfQ.jOqy7r0fIrH8JiL0VBxb43CqWqkMcaxRgTMG3lqpnbgzAW15UXGHIfPy3LMXqFh4MvoCREsI1k5J-IjCJ8K3bDf6GMiOIzQIoFrj8nEU3WTVRGRNGvyNLkJSBrfEj7LDe_YH0JlOGCCTL1qjt-4TjCeMcSqwF5DXHh0lAd2ByOWdYdF98u9Kq0s3wL8Fvj3VJQpCOvTAzX6gAYbVG5YLIwGpj3MFIbwkDTfHRGmcasmvJgmv0-zPRjP9NkNe9B7WS-VhUOCHDY7lv7JOhVsLf3IQ5EivuEzW7XR8hWs_H5-JTNp8U6KXoVR19bxRvEMJwqPfB9Tz2y3GWRlSSbV-oqGF56MKPQv1XRMnkFuHRvj3NwFp4Gy2BKTR3J6MEpV4WR0YfHQ9JX7Tz8MuGN5hXzS3nMqVU6LYp7bNKFtj6IiGe4dTAJzH7vM2XWLDwFCVpbR6mV5j0XsQ"},
+                        body:JSON.stringify({email,groups:["147058498547827329"],fields:{source:"90-day-quest",list_name:ans.name||""}})
+                      });
+                      LS.set("bl-email",email);
+                      const btn=document.getElementById("quest-submit");
+                      if(btn){btn.textContent="✦ Quest starts Monday";btn.style.background="#6EE7B7";btn.style.color="#071E1E";}
+                    }catch(e){console.warn("MailerLite:",e);}
+                  }}
+                  id="quest-submit"
+                  style={{background:G,border:"none",color:INK,padding:"14px 24px",fontSize:11,fontWeight:700,letterSpacing:".16em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,whiteSpace:"nowrap"}}
+                >
+                  Start My Quest ✦
+                </button>
+              </div>
+            ) : (
+              <div style={{display:"inline-flex",alignItems:"center",gap:10,background:"rgba(110,231,183,.1)",border:"1px solid rgba(110,231,183,.3)",padding:"14px 24px"}}>
+                <span style={{fontSize:16,color:"#6EE7B7"}}>✦</span>
+                <span style={{fontSize:13,color:"#6EE7B7",fontFamily:SANS,fontWeight:500}}>You're on the quest. First mission arrives Monday.</span>
+              </div>
+            )}
+            <p style={{fontSize:11,color:"rgba(245,237,216,.25)",fontFamily:SANS,marginTop:16,letterSpacing:".06em"}}>No spam. Unsubscribe anytime. One email per week.</p>
+          </div>
         </div>
       )}
 
@@ -1018,6 +1951,10 @@ Return ONLY a valid JSON array of exactly ${count} items. No markdown, no explan
               style={{background:"transparent",border:`1px solid rgba(201,168,76,.4)`,color:G,padding:"9px 16px",fontSize:11,fontFamily:SANS,fontWeight:600,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",borderRadius:100,display:"flex",alignItems:"center",gap:5}}>
               ✦ Share
             </button>
+            <button onClick={()=>setShowPDF(true)} className="btn-ghost"
+              style={{background:"transparent",border:`1px solid rgba(201,168,76,.5)`,color:G,padding:"9px 16px",fontSize:11,fontFamily:SANS,fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",borderRadius:100,display:"flex",alignItems:"center",gap:5}}>
+              ⬇ Download PDF
+            </button>
             <button onClick={()=>setShowEmail(true)} className="btn-ghost"
               style={{background:"transparent",border:`1px solid ${RULE}`,color:MIST,padding:"9px 16px",fontSize:11,fontFamily:SANS,fontWeight:600,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",borderRadius:100}}>
               ✉ Save
@@ -1054,6 +1991,40 @@ Return ONLY a valid JSON array of exactly ${count} items. No markdown, no explan
           </div>
         </div>
       </div>
+
+
+      {/* ── AI SYNTHESIS CARD ── */}
+      {!isShared && (synthesis || (ans.name && (ans.regret||ans.future||ans.fear))) && (
+        <div style={{maxWidth:1260,margin:"0 auto",padding:"24px 24px 0"}}>
+          <div style={{background:`linear-gradient(135deg,rgba(13,42,42,.95),rgba(11,61,61,.7))`,border:`1px solid rgba(201,168,76,.28)`,borderLeft:`3px solid ${G}`,padding:"24px 28px",animation:"riseIn .7s cubic-bezier(.22,1,.36,1) both"}}>
+            <div style={{display:"flex",alignItems:"flex-start",gap:16}}>
+              <div style={{flexShrink:0,marginTop:3}}>
+                <div style={{width:32,height:32,border:`1px solid ${G}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:G}}>✦</div>
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:9,color:G,fontFamily:SANS,fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",marginBottom:12}}>What I heard about you</div>
+                {synthesis ? (
+                  <p style={{fontFamily:BASK,fontSize:16,color:IVY,lineHeight:1.8,fontStyle:"italic",margin:0}}>
+                    {synthesis}
+                  </p>
+                ) : (
+                  <p style={{fontFamily:BASK,fontSize:16,color:IVY,lineHeight:1.8,fontStyle:"italic",margin:0}}>
+                    {ans.name?.split(" ")[0] && `${ans.name.split(" ")[0]}, `}
+                    {"every item on this list connects to something you shared. "}
+                    {ans.fear?.trim() && `"${ans.fear.slice(0,70)}${ans.fear.length>70?"…":""}" is here — the thing you kept postponing. `}
+                    {ans.location?.trim() && `And several of these are genuinely reachable from ${ans.location}.`}
+                  </p>
+                )}
+                <div style={{display:"flex",alignItems:"center",gap:20,marginTop:14,flexWrap:"wrap"}}>
+                  <p style={{fontFamily:SANS,fontSize:11,color:MIST,fontWeight:300,margin:0}}>
+                    Open any card for <span style={{color:G}}>Why this is on your list</span> and <span style={{color:G}}>your first three steps.</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── CONTROLS ── */}
       <div className="controls-wrap" style={{background:`rgba(7,30,30,.97)`,borderBottom:`1px solid ${RULE}`,padding:"12px 24px",position:"sticky",top:isShared?113:61,zIndex:190,backdropFilter:"blur(14px)"}}>
