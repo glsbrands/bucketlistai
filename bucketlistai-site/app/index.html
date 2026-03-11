@@ -78,7 +78,7 @@ const CAT_KEYS=Object.keys(CAT_COLOR);
 const DIFF_COLOR={"This Weekend":"#6EE7B7","This Year":"#60A5FA","Epic Goal":"#C084FC","Lifetime Dream":"#C9A84C"};
 
 /* ── AFFILIATE ───────────────────────────────────────────────────── */
-const VIATOR_PID="P00000000";      // TODO: replace with real Viator partner ID
+const VIATOR_PID="P00291748";      // TODO: replace with real Viator partner ID
 const BOOKING_AID="000000";        // TODO: replace with real Booking.com AID
 const AMAZON_TAG="bl05cb-20";      // Amazon Associates tracking ID
 
@@ -98,7 +98,7 @@ function getAffiliateUrl(item){
 
   // Adventure & Outdoors → Viator experiences + Amazon gear fallback
   if(cat==="Adventure & Outdoors")
-    return VIATOR_PID!=="P00000000"
+    return VIATOR_PID!=="P00291748"
       ? `https://www.viator.com/search/${loc}?pid=${VIATOR_PID}&mcid=42383&medium=api`
       : `https://www.amazon.com/s?k=${q}+gear&tag=${AMAZON_TAG}`;
 
@@ -112,13 +112,13 @@ function getAffiliateUrl(item){
 
   // Food & Drink → Viator food tours
   if(cat==="Food & Drink")
-    return VIATOR_PID!=="P00000000"
+    return VIATOR_PID!=="P00291748"
       ? `https://www.viator.com/search/${loc}+food+tour?pid=${VIATOR_PID}&mcid=42383&medium=api`
       : `https://www.amazon.com/s?k=${q}+cookbook&tag=${AMAZON_TAG}`;
 
   // Travel & Culture → Viator (best fit), fallback Booking.com
   if(cat==="Travel & Culture")
-    return VIATOR_PID!=="P00000000"
+    return VIATOR_PID!=="P00291748"
       ? `https://www.viator.com/search/${loc}?pid=${VIATOR_PID}&mcid=42383&medium=api`
       : BOOKING_AID!=="000000"
         ? `https://www.booking.com/searchresults.html?ss=${loc}&aid=${BOOKING_AID}&label=bucketlistai`
