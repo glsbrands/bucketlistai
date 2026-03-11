@@ -26,5 +26,13 @@
 /blog/empty-nester-bucket-list              /blog/empty-nester-bucket-list/index.html              200
 /blog/bucket-list-for-your-60s             /blog/bucket-list-for-your-60s/index.html              200
 
+/blog/bucket-list-with-your-pets          /blog/bucket-list-with-your-pets/index.html          200
+/blog/power-of-now-bucket-list            /blog/power-of-now-bucket-list/index.html            200
+/blog/gen-x-bucket-list                   /blog/gen-x-bucket-list/index.html                   200
+/blog/wildlife-bucket-list                /blog/wildlife-bucket-list/index.html                200
+/blog/baby-boomer-bucket-list             /blog/baby-boomer-bucket-list/index.html             200
+/blog/millennial-bucket-list              /blog/millennial-bucket-list/index.html              200
+/blog/concert-bucket-list                 /blog/concert-bucket-list/index.html                 200
+
 # 404 fallback — must be last
 /*            /404.html                404
