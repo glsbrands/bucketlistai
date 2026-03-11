@@ -1,10 +1,30 @@
 # Netlify Redirects
-# Place this file in the ROOT of your deployment folder
 
-# Clean URLs — remove .html from all pages
-/privacy     /privacy.html    200
-/terms       /terms.html      200
-/about       /about.html      200
+# Static pages
+/privacy      /privacy.html             200
+/terms        /terms.html               200
+
+# Folder-based pages — serve index.html inside each folder
+/app          /app/index.html           200
+/ideas        /ideas/index.html         200
+/about        /about/index.html         200
+/blog         /blog/index.html          200
+
+# Blog articles
+/blog/how-to-build-a-bucket-list            /blog/how-to-build-a-bucket-list/index.html            200
+/blog/100-bucket-list-ideas-2026            /blog/100-bucket-list-ideas-2026/index.html            200
+/blog/solo-travel-bucket-list               /blog/solo-travel-bucket-list/index.html               200
+/blog/bucket-list-ideas-couples             /blog/bucket-list-ideas-couples/index.html             200
+/blog/bucket-list-before-30                 /blog/bucket-list-before-30/index.html                 200
+/blog/family-bucket-list-ideas              /blog/family-bucket-list-ideas/index.html              200
+/blog/retirement-bucket-list                /blog/retirement-bucket-list/index.html                200
+/blog/bucket-list-ideas-turning-50          /blog/bucket-list-ideas-turning-50/index.html          200
+/blog/bucket-list-ideas-for-women           /blog/bucket-list-ideas-for-women/index.html           200
+/blog/adventure-bucket-list-ideas           /blog/adventure-bucket-list-ideas/index.html           200
+/blog/bucket-list-ideas-turning-40          /blog/bucket-list-ideas-turning-40/index.html          200
+/blog/midlife-bucket-list                   /blog/midlife-bucket-list/index.html                   200
+/blog/empty-nester-bucket-list              /blog/empty-nester-bucket-list/index.html              200
+/blog/bucket-list-for-your-60s             /blog/bucket-list-for-your-60s/index.html              200
 
 # 404 fallback — must be last
-/*           /404.html        404
+/*            /404.html                404
