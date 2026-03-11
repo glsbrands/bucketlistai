@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Bucket List AI — Build Your List</title>
+  <meta name="description" content="Answer 8 questions. We build your personalized bucket list in 3 minutes. Deeply personal, AI-powered, free."/>
+  <link rel="canonical" href="https://thebucketlistai.com/app"/>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230B3D3D'/%3E%3Ctext x='16' y='22' font-size='18' text-anchor='middle' fill='%23C9A84C' font-family='Georgia'%3E✦%3C/text%3E%3C/svg%3E"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{width:100%;min-height:100vh;background:#071E1E;font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#F5EDD8}
+    #root{min-height:100vh}
+    body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");background-size:256px;opacity:.5}
+    @keyframes riseIn   {from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn   {from{opacity:0}to{opacity:1}}
+    @keyframes spin     {from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    @keyframes pulse    {0%,100%{opacity:.4;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+    @keyframes goldGlow {0%,100%{box-shadow:0 2px 16px rgba(0,0,0,.3)}50%{box-shadow:0 0 40px 8px rgba(201,168,76,.28)}}
+    @keyframes celebrate{0%{transform:scale(1)}40%{transform:scale(1.03)}70%{transform:scale(.98)}100%{transform:scale(1)}}
+    @keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(120px) rotate(720deg);opacity:0}}
+    @keyframes barGrow  {from{width:0}to{width:var(--w)}}
+    @keyframes noteIn   {from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes shimmer  {0%,100%{opacity:.3}50%{opacity:.8}}
+
+    input:focus,textarea:focus{outline:none!important;border-color:#C9A84C!important;box-shadow:0 0 0 3px rgba(201,168,76,.12)!important}
+    select:focus{outline:none!important;border-color:#C9A84C!important}
+    input::placeholder,textarea::placeholder{color:rgba(245,237,216,.3)}
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-track{background:#071E1E}
+    ::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:2px}
+
+    .btn-gold{transition:all .28s cubic-bezier(.22,1,.36,1)!important}
+    .btn-gold:hover{background:#E2BC60!important;transform:translateY(-2px)!important;box-shadow:0 12px 40px rgba(201,168,76,.4)!important}
+    .btn-ghost:hover{border-color:rgba(201,168,76,.5)!important;color:#C9A84C!important;background:rgba(201,168,76,.06)!important}
+    .opt-btn:hover{border-color:#C9A84C!important;color:#C9A84C!important;background:rgba(201,168,76,.07)!important}
+    .card-item{transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s ease}
+    .card-item:hover{transform:translateY(-5px)!important;box-shadow:0 24px 60px rgba(0,0,0,.55)!important}
+    .act-btn:hover{border-color:rgba(201,168,76,.5)!important;color:#C9A84C!important;background:rgba(201,168,76,.07)!important}
+    .done-btn:hover{background:#C9A84C!important;color:#071E1E!important;border-color:#C9A84C!important}
+    .mode-card:hover{border-color:#C9A84C!important;transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.45)!important}
+    .pill-filter:hover{border-color:rgba(201,168,76,.5)!important;color:#F5EDD8!important}
+
+    @media(max-width:600px){
+      .hide-mobile{display:none!important}
+      .controls-wrap{padding:10px 14px!important}
+      .filter-scroll{overflow-x:auto!important;flex-wrap:nowrap!important;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+      .filter-scroll::-webkit-scrollbar{display:none}
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback}=React;
+
+/* ── TOKENS ─────────────────────────────────────────────────────── */
+const G="#C9A84C",GL="#E2BC60",GD="rgba(201,168,76,.38)";
+const INK="#071E1E",TEAL="#0B3D3D",CARD="#0E3A3A",CARD2="#0D4040";
+const IVY="#F5EDD8",MIST="rgba(245,237,216,.58)",RULE="rgba(201,168,76,.18)";
+const SERIF="'Instrument Serif',Georgia,serif";
+const BASK="'Libre Baskerville',Georgia,serif";
+const SANS="'DM Sans',system-ui,sans-serif";
+
+const CAT_COLOR={
+  "Travel & Culture":"#4ECDC4","Adventure & Outdoors":"#7BC67E",
+  "Food & Drink":"#E8956D","Creative & Arts":"#C084FC",
+  "Learning & Skills":"#60A5FA","Wellness & Mindfulness":"#6EE7B7",
+  "Personal Growth":"#F472B6","Relationships & Giving":"#FB923C",
+  "Local Adventures":"#A3E635",
+};
+const CAT_KEYS=Object.keys(CAT_COLOR);
+const DIFF_COLOR={"This Weekend":"#6EE7B7","This Year":"#60A5FA","Epic Goal":"#C084FC","Lifetime Dream":"#C9A84C"};
+
+/* ── AFFILIATE ───────────────────────────────────────────────────── */
+const VIATOR_PID="P00291748";      // TODO: replace with real Viator partner ID
+const BOOKING_AID="000000";        // TODO: replace with real Booking.com AID
+const AMAZON_TAG="bl05cb-20";      // Amazon Associates tracking ID
+
+// Smart affiliate routing by category
+function getAffiliateUrl(item){
+  const q=encodeURIComponent(item.title);
+  const loc=encodeURIComponent(item.location||item.title);
+  const cat=item.category||"";
+
+  // Learning & Skills → Amazon books search
+  if(cat==="Learning & Skills")
+    return `https://www.amazon.com/s?k=${q}+book&tag=${AMAZON_TAG}`;
+
+  // Creative & Arts → Amazon supplies
+  if(cat==="Creative & Arts")
+    return `https://www.amazon.com/s?k=${q}+supplies&tag=${AMAZON_TAG}`;
+
+  // Adventure & Outdoors → Viator experiences + Amazon gear fallback
+  if(cat==="Adventure & Outdoors")
+    return VIATOR_PID!=="P00291748"
+      ? `https://www.viator.com/search/${loc}?pid=${VIATOR_PID}&mcid=42383&medium=api`
+      : `https://www.amazon.com/s?k=${q}+gear&tag=${AMAZON_TAG}`;
+
+  // Wellness & Mindfulness → Amazon wellness books/products
+  if(cat==="Wellness & Mindfulness")
+    return `https://www.amazon.com/s?k=${q}&tag=${AMAZON_TAG}`;
+
+  // Personal Growth → Amazon books
+  if(cat==="Personal Growth")
+    return `https://www.amazon.com/s?k=${q}+book&tag=${AMAZON_TAG}`;
+
+  // Food & Drink → Viator food tours
+  if(cat==="Food & Drink")
+    return VIATOR_PID!=="P00291748"
+      ? `https://www.viator.com/search/${loc}+food+tour?pid=${VIATOR_PID}&mcid=42383&medium=api`
+      : `https://www.amazon.com/s?k=${q}+cookbook&tag=${AMAZON_TAG}`;
+
+  // Travel & Culture → Viator (best fit), fallback Booking.com
+  if(cat==="Travel & Culture")
+    return VIATOR_PID!=="P00291748"
+      ? `https://www.viator.com/search/${loc}?pid=${VIATOR_PID}&mcid=42383&medium=api`
+      : BOOKING_AID!=="000000"
+        ? `https://www.booking.com/searchresults.html?ss=${loc}&aid=${BOOKING_AID}&label=bucketlistai`
+        : `https://www.amazon.com/s?k=${q}+travel+guide&tag=${AMAZON_TAG}`;
+
+  // Default → Amazon search
+  return `https://www.amazon.com/s?k=${q}&tag=${AMAZON_TAG}`;
+}
+
+// Label for the button based on category
+function getAffiliateCTA(item){
+  const cat=item.category||"";
+  if(cat==="Learning & Skills"||cat==="Personal Growth") return "📚 Find Books & Resources →";
+  if(cat==="Creative & Arts") return "🎨 Shop Supplies →";
+  if(cat==="Adventure & Outdoors") return "🧭 Book This Experience →";
+  if(cat==="Wellness & Mindfulness") return "🌿 Explore Resources →";
+  if(cat==="Food & Drink") return "🍽 Find Food Experiences →";
+  if(cat==="Travel & Culture") return "✈ Book This Dream →";
+  return "✦ Make It Happen →";
+}
+
+/* ── UNSPLASH ────────────────────────────────────────────────────── */
+const UKEY="J05t6VFsg_Ff3Y7H9utFqxi9M7LNAjLM-Pm2H88vWhQ";
+const FALLBACKS={
+  "Travel & Culture":"https://images.unsplash.com/photo-1508193638397-1c4234db14d8?w=800&q=75",
+  "Adventure & Outdoors":"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=75",
+  "Food & Drink":"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=75",
+  "Creative & Arts":"https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&q=75",
+  "Learning & Skills":"https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&q=75",
+  "Wellness & Mindfulness":"https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=75",
+  "Personal Growth":"https://images.unsplash.com/photo-1499728603263-13726abce5fd?w=800&q=75",
+  "Relationships & Giving":"https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=75",
+  "Local Adventures":"https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=75",
+};
+async function fetchPhoto(item){
+  try{
+    const r=await fetch(`https://api.unsplash.com/photos/random?query=${encodeURIComponent(item.title+" "+item.location)}&orientation=landscape&content_filter=high&client_id=${UKEY}`);
+    if(!r.ok) throw 0;
+    const d=await r.json();
+    return d?.urls?.regular||null;
+  }catch{return null;}
+}
+async function bakePhotos(list){
+  const res=await Promise.allSettled(list.map(fetchPhoto));
+  return list.map((item,i)=>({...item,photoUrl:(res[i].status==="fulfilled"&&res[i].value)?res[i].value:FALLBACKS[item.category]||FALLBACKS["Travel & Culture"]}));
+}
+
+/* ── UTILS ───────────────────────────────────────────────────────── */
+const uid=()=>Math.random().toString(36).slice(2,10);
+const parseCount=s=>{const m=s?.match(/\d+/);return m?parseInt(m[0]):25;};
+const fmtDate=ts=>ts?new Date(ts).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):null;
+const LS={
+  get:k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch{return null;}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}},
+};
+
+/* ── SHAREABLE URL ───────────────────────────────────────────────── */
+function encodeList(items,ans){
+  try{
+    const payload={items:items.map(i=>({id:i.id,title:i.title,location:i.location,category:i.category,difficulty:i.difficulty,description:i.description})),name:ans.name||""};
+    return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  }catch{return null;}
+}
+function decodeList(hash){
+  try{return JSON.parse(decodeURIComponent(escape(atob(hash))));}catch{return null;}
+}
+function buildShareUrl(items,ans){
+  const encoded=encodeList(items,ans);
+  if(!encoded) return null;
+  return `${window.location.origin}/app?list=${encoded}`;
+}
+
+/* ── QUIZ DATA ────────────────────────────────────────────────────── */
+const MODES=[
+  {id:"personal",icon:"✦",label:"Just Me",      sub:"A deeply personal life list"},
+  {id:"couple",  icon:"♡",label:"For Us",        sub:"A shared list for two"},
+  {id:"family",  icon:"⌂",label:"Family",        sub:"Adventures for everyone"},
+  {id:"surprise",icon:"✧",label:"Surprise Me",   sub:"Let the AI decide everything"},
+];
+const LIFE_STAGES=[
+  {id:"teen",      label:"Under 20",  icon:"🌱"},
+  {id:"twenties",  label:"20s",       icon:"⚡"},
+  {id:"thirties",  label:"30s",       icon:"🔥"},
+  {id:"forties",   label:"40s",       icon:"🌊"},
+  {id:"fifties",   label:"50s",       icon:"🌿"},
+  {id:"sixties",   label:"60s",       icon:"☀️"},
+  {id:"retirement",label:"Retirement",icon:"✦"},
+];
+const STEPS=[
+  {id:"name",      type:"text",            eyebrow:"Welcome",      question:"Let's start. What's your name?",                              subtitle:"This list will be built for you, and only you.",               placeholder:"Your name..."},
+  {id:"location",  type:"text",            eyebrow:"Step 1 of 8",  question:"Where in the world do you call home?",                             subtitle:"We'll find extraordinary adventures on your doorstep too.",    placeholder:"e.g. London, UK or Dubai, UAE"},
+  {id:"stage",     type:"single_icon",     eyebrow:"Step 2 of 8",  question:"What chapter of life are you in right now?",                       subtitle:"Each season of life deserves its own kind of extraordinary.",  options:LIFE_STAGES},
+  {id:"regret",    type:"text_big_values", eyebrow:"Step 3 of 8",  question:"You're 90, looking back. What do you hope you spent your time on?",  subtitle:"Be specific — not 'family and adventure' but what exactly. The more detail, the better your list.", placeholder:"e.g. I want to have taken my kids to see the places I grew up hearing about. Built something that outlasted me. Learned Italian properly. Said the things I kept almost saying. Watched sunrise from somewhere that earned it..."},
+  {id:"future",    type:"text_big",        eyebrow:"Step 4 of 8",  question:"It's 10 years from now and everything went right. Describe a specific Tuesday morning.", subtitle:"Sensory details, not goals — what do you see, hear, smell? Who is there? What's on the calendar that week?", placeholder:"e.g. I wake up in the house we finally bought outside the city. Kids are older. Working on something I actually chose. Morning run, then work I care about, dinner we cooked. Been to Japan twice by then. There's a dog..."},
+  {id:"fear",      type:"text_big",        eyebrow:"Step 5 of 8",  question:"What’s been on every mental version of your bucket list — but never actually gets booked?", subtitle:"The thing you keep almost doing. The AI will make sure this one finally makes it.",              placeholder:"e.g. Three weeks in Japan. Write the novel I’ve been outlining for four years. Take my mum back to where she grew up. Learn to freedive. Actually run a marathon — not just sign up for one..."},
+  {id:"categories",type:"multiselect",     eyebrow:"Step 6 of 8",  question:"What kinds of experiences light you up?",                          subtitle:"Choose everything that makes your heart beat faster.",         options:CAT_KEYS},
+  {id:"difficulty",type:"multiselect",     eyebrow:"Step 7 of 8",  question:"What does your life have room for right now?",                     subtitle:"Be honest — the best list meets you where you are.",          options:["Something this weekend","A goal for this year","A big challenge to work toward","A dream for one day"]},
+  {id:"count",     type:"single",          eyebrow:"Step 8 of 8",  question:"How long should your one wild and precious life list be?",         subtitle:"There are no wrong answers here.",                             options:["10 — focused and intentional","25 — a life well lived","50 — go bigger than you planned","100 — the full, unedited version"]},
+];
+const GMSGS=["Reading everything you shared...","Identifying the patterns in what you told us...","Synthesising your values, vision, and what you keep postponing...","Building experiences around the life you described...","Grounding your list in where you actually live...","Writing your personal summary now...","Ensuring every item earns its place...","One last pass — making sure this list could only ever be yours..."];
+
+/* ── SHARED ATOMS ────────────────────────────────────────────────── */
+function Logo(){
+  return(
+    <div style={{display:"flex",alignItems:"center",gap:12,justifyContent:"center"}}>
+      <div style={{height:1,width:40,background:`linear-gradient(to right,transparent,${G})`}}/>
+      <a href="/" style={{color:G,fontSize:11,letterSpacing:"0.26em",textTransform:"uppercase",fontFamily:SANS,fontWeight:700,textDecoration:"none"}}>The Bucket List AI</a>
+      <div style={{height:1,width:40,background:`linear-gradient(to left,transparent,${G})`}}/>
+    </div>
+  );
+}
+function Rule({mb=0,mt=0,op=1}){
+  return <div style={{height:1,background:`linear-gradient(to right,transparent,${G},transparent)`,marginBottom:mb,marginTop:mt,opacity:op}}/>;
+}
+
+/* ── CARD PHOTO ──────────────────────────────────────────────────── */
+function CardPhoto({item,isDone}){
+  const accent=CAT_COLOR[item.category]||G;
+  const [loaded,setLoaded]=useState(false);
+  const src=item.photoUrl||FALLBACKS[item.category]||FALLBACKS["Travel & Culture"];
+  const diffColor=DIFF_COLOR[item.difficulty]||G;
+  return(
+    <div style={{position:"relative",height:190,overflow:"hidden"}}>
+      <div style={{position:"absolute",inset:0,background:CARD,display:loaded?"none":"flex",alignItems:"center",justifyContent:"center"}}>
+        <div style={{width:24,height:24,border:`2px solid ${GD}`,borderTopColor:G,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
+      </div>
+      <img src={src} alt={item.title} onLoad={()=>setLoaded(true)}
+        style={{width:"100%",height:"100%",objectFit:"cover",opacity:isDone?.45:loaded?1:0,transition:"opacity .5s ease",filter:isDone?"grayscale(60%)":"none"}}/>
+      <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,rgba(7,30,30,0) 30%,rgba(7,30,30,.85) 100%)"}}/>
+      <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:accent}}/>
+      <div style={{position:"absolute",bottom:12,left:14,right:14,display:"flex",alignItems:"flex-end",justifyContent:"space-between",gap:8}}>
+        <span style={{fontSize:9,fontWeight:700,letterSpacing:".18em",textTransform:"uppercase",color:accent,fontFamily:SANS,background:"rgba(7,30,30,.75)",padding:"3px 8px",borderRadius:100}}>
+          {item.category}
+        </span>
+        <span style={{fontSize:9,fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",color:diffColor,fontFamily:SANS,background:"rgba(7,30,30,.75)",padding:"3px 8px",borderRadius:100}}>
+          {item.difficulty}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ── NEXT STEPS ──────────────────────────────────────────────────── */
+function NextSteps({steps}){
+  const [open,setOpen]=useState(false);
+  if(!steps?.length) return null;
+  return(
+    <div style={{marginBottom:10}}>
+      <button onClick={()=>setOpen(o=>!o)} className="act-btn"
+        style={{background:"transparent",border:`1px solid ${open?"rgba(201,168,76,.4)":RULE}`,color:open?G:MIST,padding:"6px 12px",fontSize:11,fontFamily:SANS,fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",cursor:"pointer",width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",transition:"all .2s"}}>
+        <span>Next Steps</span>
+        <span style={{fontSize:10,opacity:.7}}>{open?"▲":"▼"}</span>
+      </button>
+      {open&&(
+        <div style={{marginTop:6,display:"flex",flexDirection:"column",gap:5,animation:"noteIn .2s ease"}}>
+          {steps.map((s,i)=>(
+            <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start"}}>
+              <div style={{width:18,height:18,borderRadius:"50%",background:`rgba(201,168,76,.15)`,border:`1px solid ${GD}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:G,fontFamily:SANS,fontWeight:700,flexShrink:0,marginTop:1}}>{i+1}</div>
+              <p style={{fontSize:12,color:MIST,lineHeight:1.65,fontFamily:SANS}}>{s}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── ADD DREAM MODAL ─────────────────────────────────────────────── */
+function AddDreamModal({onAdd,onClose}){
+  const [title,setTitle]=useState("");
+  const [location,setLocation]=useState("");
+  const [category,setCategory]=useState(CAT_KEYS[0]);
+  const [desc,setDesc]=useState("");
+  const [saving,setSaving]=useState(false);
+  async function submit(){
+    if(!title.trim()||!location.trim()) return;
+    setSaving(true);
+    const item={id:uid(),title:title.trim(),location:location.trim(),category,description:desc.trim()||"A dream chosen by you.",difficulty:"Epic Goal",nextSteps:[],custom:true};
+    const photoUrl=await fetchPhoto(item)||FALLBACKS[category]||FALLBACKS["Travel & Culture"];
+    onAdd({...item,photoUrl});
+    setSaving(false);
+    onClose();
+  }
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.78)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:24}} onClick={onClose}>
+      <div style={{background:CARD2,border:`1px solid rgba(201,168,76,.3)`,maxWidth:520,width:"100%",padding:36,maxHeight:"90vh",overflowY:"auto",borderRadius:2}} onClick={e=>e.stopPropagation()}>
+        <h2 style={{fontFamily:SERIF,fontSize:28,fontWeight:400,color:IVY,marginBottom:6}}>Add Your Own Dream</h2>
+        <p style={{fontSize:14,color:MIST,fontFamily:SANS,marginBottom:24}}>Something the AI didn't think of — make it yours.</p>
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          {[["Dream *",title,setTitle,"e.g. Watch the sunrise over Angkor Wat"],["Location *",location,setLocation,"e.g. Siem Reap, Cambodia"]].map(([lbl,val,set,ph])=>(
+            <div key={lbl}>
+              <label style={{fontSize:10,color:G,letterSpacing:".18em",textTransform:"uppercase",fontFamily:SANS,fontWeight:700,display:"block",marginBottom:6}}>{lbl}</label>
+              <input value={val} onChange={e=>set(e.target.value)} placeholder={ph}
+                style={{width:"100%",background:"rgba(255,255,255,.05)",border:`1px solid ${RULE}`,padding:"12px 16px",fontSize:15,color:IVY,fontFamily:SANS,borderRadius:2}}/>
+            </div>
+          ))}
+          <div>
+            <label style={{fontSize:10,color:G,letterSpacing:".18em",textTransform:"uppercase",fontFamily:SANS,fontWeight:700,display:"block",marginBottom:6}}>Category</label>
+            <select value={category} onChange={e=>setCategory(e.target.value)}
+              style={{width:"100%",background:CARD,border:`1px solid ${RULE}`,padding:"12px 16px",fontSize:14,color:IVY,fontFamily:SANS,cursor:"pointer",borderRadius:2}}>
+              {CAT_KEYS.map(k=><option key={k} value={k}>{k}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={{fontSize:10,color:G,letterSpacing:".18em",textTransform:"uppercase",fontFamily:SANS,fontWeight:700,display:"block",marginBottom:6}}>Why does this matter? <span style={{color:MIST,fontWeight:400,textTransform:"none",letterSpacing:0}}>(optional)</span></label>
+            <textarea value={desc} onChange={e=>setDesc(e.target.value)} placeholder="Tell the story behind this dream..." rows={3}
+              style={{width:"100%",background:"rgba(255,255,255,.05)",border:`1px solid ${RULE}`,padding:"12px 16px",fontSize:14,color:IVY,fontFamily:SANS,resize:"vertical",borderRadius:2}}/>
+          </div>
+        </div>
+        <div style={{display:"flex",gap:10,marginTop:24}}>
+          <button onClick={submit} disabled={saving} className="btn-gold"
+            style={{flex:1,background:saving?"rgba(201,168,76,.5)":G,border:"none",color:INK,padding:14,fontSize:13,fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",cursor:saving?"default":"pointer",fontFamily:SANS,borderRadius:2,transition:"all .2s"}}>
+            {saving?"Finding a photo...":"Add to My List ✦"}
+          </button>
+          <button onClick={onClose} className="btn-ghost"
+            style={{background:"transparent",border:`1px solid rgba(255,255,255,.12)`,color:MIST,padding:"14px 20px",fontSize:13,cursor:"pointer",fontFamily:SANS,borderRadius:2}}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── EMAIL MODAL ─────────────────────────────────────────────────── */
+function EmailModal({userName,onClose}){
+  const [email,setEmail]=useState("");
+  const [sent,setSent]=useState(false);
+  const [loading,setLoading]=useState(false);
+  async function submit(){
+    if(!email.includes("@")) return;
+    setLoading(true);
+    LS.set("bl-email",email);
+    await mlSubscribe(email,"thebucketlistai.com/app");
+    setLoading(false);
+    setSent(true);
+  }
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.78)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:24}} onClick={onClose}>
+      <div style={{background:CARD2,border:`1px solid rgba(201,168,76,.3)`,maxWidth:480,width:"100%",padding:40,textAlign:"center",borderRadius:2}} onClick={e=>e.stopPropagation()}>
+        {!sent?(
+          <>
+            <div style={{fontSize:36,color:G,marginBottom:16}}>✦</div>
+            <h2 style={{fontFamily:SERIF,fontSize:30,fontWeight:400,color:IVY,marginBottom:10}}>Save Your List{userName?`, ${userName}`:""}</h2>
+            <p style={{fontSize:15,color:MIST,fontFamily:SANS,lineHeight:1.75,marginBottom:28}}>Enter your email and we'll keep your bucket list safe — accessible from any device, any time.</p>
+            <input value={email} onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&submit()} placeholder="your@email.com" type="email"
+              style={{width:"100%",background:"rgba(255,255,255,.05)",border:`1px solid rgba(201,168,76,.35)`,padding:"14px 18px",fontSize:16,color:IVY,fontFamily:SANS,textAlign:"center",marginBottom:14,borderRadius:2}}/>
+            <button onClick={submit} disabled={loading} className="btn-gold"
+              style={{width:"100%",background:loading?"rgba(201,168,76,.5)":G,border:"none",color:INK,padding:16,fontSize:13,fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",cursor:loading?"default":"pointer",fontFamily:SANS,marginBottom:12,borderRadius:2,transition:"all .2s"}}>
+              {loading?"Saving...":"Save My Bucket List ✦"}
+            </button>
+            <p style={{fontSize:11,color:GD,fontFamily:SANS}}>No spam. Just your list, safe forever.</p>
+          </>
+        ):(
+          <>
+            <div style={{fontSize:48,color:G,marginBottom:16}}>✓</div>
+            <h2 style={{fontFamily:SERIF,fontSize:26,fontWeight:400,color:IVY,marginBottom:10}}>You're all set!</h2>
+            <p style={{fontSize:15,color:MIST,fontFamily:SANS,lineHeight:1.75,marginBottom:24}}>Your list is saved. We'll be in touch with inspiration to help you start living it.</p>
+            <button onClick={onClose} style={{background:G,border:"none",color:INK,padding:"14px 40px",fontSize:13,fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,borderRadius:2}}>Back to My List</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── PDF MODAL ────────────────────────────────────────────────────── */
+function PDFModal({items,ans,onClose}){
+  const [tab,setTab]=useState("free");
+  const [generating,setGenerating]=useState(false);
+  const [done,setDone]=useState(false);
+  const [premiumDone,setPremiumDone]=useState(false);
+  const [email,setEmail]=useState("");
+  const [emailSent,setEmailSent]=useState(false);
+  const name=ans.name||"Your";
+  const count=items.length;
+  const doneCount=items.filter(i=>i.done).length;
+
+  // ── Stripe Payment Link ─────────────────────────────────────────────────
+  // Create at dashboard.stripe.com → Payment Links → $9.99 one-time
+  // Set "After payment" redirect to: https://thebucketlistai.com/app?premium=1
+  const STRIPE_LINK="https://buy.stripe.com/REPLACE_WITH_YOUR_LINK";
+
+  function goToPremium(){
+    // Save list + quiz answers to sessionStorage so we can retrieve after payment
+    try{
+      sessionStorage.setItem("bl-premium-pending", JSON.stringify({items,ans}));
+    }catch(e){}
+    // Open Stripe in new tab so user doesn't lose their list
+    window.open(STRIPE_LINK, "_blank", "noopener");
+  }
+
+  // ── FREE PDF ────────────────────────────────────────────────────────────
+  async function generateFreePDF(){
+    setGenerating(true);
+    try{
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+      const W=210, H=297;
+      const GOLD=[201,168,76];
+      const INK_C=[7,30,30];
+      const IVY_C=[245,237,216];
+      const MIST_C=[160,185,180];
+
+      // Cover page
+      doc.setFillColor(...INK_C);
+      doc.rect(0,0,W,H,"F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.4);
+      doc.line(20,18,190,18);
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(8);
+      doc.setFont("helvetica","bold");
+      doc.text("THE BUCKET LIST AI  ✦  THEBUCKETLISTAI.COM", W/2, 28, {align:"center"});
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.line(20,34,190,34);
+      doc.setTextColor(...IVY_C);
+      doc.setFontSize(48);
+      doc.setFont("helvetica","bold");
+      doc.text(name+"'s", W/2, 120, {align:"center"});
+      doc.setFontSize(32);
+      doc.setFont("helvetica","normal");
+      doc.text("Bucket List", W/2, 140, {align:"center"});
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.5);
+      doc.line(60,152,150,152);
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(9);
+      doc.setFont("helvetica","bold");
+      doc.text("ONE WILD AND PRECIOUS LIFE", W/2, 162, {align:"center"});
+
+      // Stats box
+      doc.setFillColor(14,58,58);
+      doc.rect(40,178,130,44,"F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.rect(40,178,130,44,"S");
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(22);
+      doc.setFont("helvetica","bold");
+      doc.text(String(count), 80, 196, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("EXPERIENCES", 80, 204, {align:"center"});
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.2);
+      doc.line(105,182,105,218);
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(22);
+      doc.setFont("helvetica","bold");
+      doc.text(String(doneCount), 140, 196, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("COMPLETED", 140, 204, {align:"center"});
+
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.line(20,H-18,190,H-18);
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","normal");
+      doc.text("Generated with love. Live the list.", W/2, H-10, {align:"center"});
+
+      // List pages
+      const byCategory={};
+      items.forEach(item=>{
+        const cat=item.category||"Adventures";
+        if(!byCategory[cat]) byCategory[cat]=[];
+        byCategory[cat].push(item);
+      });
+
+      for(const [cat,catItems] of Object.entries(byCategory)){
+        doc.addPage();
+        doc.setFillColor(...INK_C);
+        doc.rect(0,0,W,H,"F");
+
+        // Category header
+        doc.setFillColor(14,58,58);
+        doc.rect(0,0,W,28,"F");
+        doc.setTextColor(...GOLD);
+        doc.setFontSize(9);
+        doc.setFont("helvetica","bold");
+        doc.text(cat.toUpperCase(), 20, 17);
+        doc.setTextColor(...MIST_C);
+        doc.setFontSize(7);
+        doc.text(`${catItems.length} experience${catItems.length!==1?"s":""}`, 190, 17, {align:"right"});
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(0.3);
+        doc.line(0,28,W,28);
+
+        let y=40;
+        catItems.forEach(item=>{
+          if(y>H-30){
+            doc.addPage();
+            doc.setFillColor(...INK_C);
+            doc.rect(0,0,W,H,"F");
+            y=20;
+          }
+          const isDone=item.done;
+
+          // Checkbox
+          doc.setDrawColor(...GOLD);
+          doc.setLineWidth(0.4);
+          doc.rect(20,y-4,6,6);
+          if(isDone){
+            doc.setTextColor(...GOLD);
+            doc.setFontSize(7);
+            doc.text("✓",21.5,y+0.5);
+          }
+
+          // Title
+          doc.setTextColor(isDone?MIST_C:IVY_C);
+          doc.setFontSize(10);
+          doc.setFont("helvetica","bold");
+          const titleLines=doc.splitTextToSize(item.title, 118);
+          doc.text(titleLines[0], 30, y+0.5);
+
+          // Location
+          if(item.location){
+            doc.setTextColor(...GOLD);
+            doc.setFontSize(7);
+            doc.setFont("helvetica","normal");
+            doc.text("📍 "+item.location, 165, y+0.5, {align:"right"});
+          }
+
+          // Description
+          if(!isDone&&item.description){
+            doc.setTextColor(...MIST_C);
+            doc.setFontSize(8);
+            doc.setFont("helvetica","italic");
+            const descLines=doc.splitTextToSize(item.description, 148);
+            doc.text(descLines[0], 30, y+8);
+          }
+
+          // Difficulty
+          doc.setTextColor(...GOLD);
+          doc.setFontSize(6.5);
+          doc.setFont("helvetica","bold");
+          doc.text(item.difficulty||"", 165, y+8, {align:"right"});
+
+          doc.setDrawColor(14,58,58);
+          doc.setLineWidth(0.3);
+          doc.line(20,y+(isDone?10:18),190,y+(isDone?10:18));
+          y+=(isDone?14:24);
+        });
+
+        doc.setTextColor(...MIST_C);
+        doc.setFontSize(7);
+        doc.setFont("helvetica","normal");
+        doc.text(`${name}'s Bucket List  ·  thebucketlistai.com`, W/2, H-8, {align:"center"});
+      }
+
+      // Final page
+      doc.addPage();
+      doc.setFillColor(...INK_C);
+      doc.rect(0,0,W,H,"F");
+      doc.setFillColor(14,58,58);
+      doc.rect(20,80,170,120,"F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.4);
+      doc.rect(20,80,170,120,"S");
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(8);
+      doc.setFont("helvetica","bold");
+      doc.text("✦", W/2, 70, {align:"center"});
+      doc.setTextColor(...IVY_C);
+      doc.setFontSize(22);
+      doc.setFont("helvetica","bold");
+      doc.text("This is your list.", W/2, 96, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(9);
+      doc.setFont("helvetica","normal");
+      const closing="Not a generic collection. A list built from your values,\nyour vision, and what you said matters most.\nEvery item belongs here because you do.";
+      const closingLines=doc.splitTextToSize(closing, 140);
+      doc.text(closingLines, W/2, 112, {align:"center"});
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.line(60,140,150,140);
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(9);
+      doc.setFont("helvetica","bold");
+      doc.text("THE BUCKET LIST AI", W/2, 152, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(8);
+      doc.setFont("helvetica","normal");
+      doc.text("Your Dreams. One Lifetime.", W/2, 162, {align:"center"});
+      doc.text("thebucketlistai.com", W/2, 170, {align:"center"});
+
+      doc.save(`${(name||"my").toLowerCase().replace(/\s+/g,"-")}-bucket-list.pdf`);
+      setGenerating(false);
+      setDone(true);
+    }catch(e){
+      console.error("PDF error:",e);
+      setGenerating(false);
+      alert("PDF generation failed. Please try again.");
+    }
+  }
+
+  // ── PREMIUM PDF ─────────────────────────────────────────────────────────
+  async function generatePremiumPDF(){
+    setGenerating(true);
+    try{
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+      const W=210, H=297;
+      const GOLD=[201,168,76];
+      const INK_C=[7,30,30];
+      const IVY_C=[245,237,216];
+      const MIST_C=[160,185,180];
+      const TEAL=[14,58,58];
+
+      // ── COVER PAGE ───────────────────────────────────────────────────────
+      doc.setFillColor(...INK_C);
+      doc.rect(0,0,W,H,"F");
+
+      // Top decorative band
+      doc.setFillColor(...TEAL);
+      doc.rect(0,0,W,8,"F");
+      doc.setFillColor(...GOLD);
+      doc.rect(0,8,W,1.5,"F");
+
+      // Header
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("THE BUCKET LIST AI  ✦  THEBUCKETLISTAI.COM", W/2, 24, {align:"center"});
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.2);
+      doc.line(40,28,170,28);
+
+      // Name
+      doc.setTextColor(...IVY_C);
+      doc.setFontSize(52);
+      doc.setFont("helvetica","bold");
+      const nameText=name+"'s";
+      doc.text(nameText, W/2, 100, {align:"center"});
+
+      // Title
+      doc.setFontSize(28);
+      doc.setFont("helvetica","normal");
+      doc.setTextColor(...IVY_C);
+      doc.text("Bucket List", W/2, 118, {align:"center"});
+
+      // Gold rule
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.6);
+      doc.line(55,128,155,128);
+
+      // Subtitle
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(8);
+      doc.setFont("helvetica","bold");
+      doc.text("ONE WILD AND PRECIOUS LIFE", W/2, 138, {align:"center"});
+
+      // Stats panel
+      doc.setFillColor(...TEAL);
+      doc.rect(30,152,150,52,"F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.rect(30,152,150,52,"S");
+
+      // Divider in stats
+      doc.setDrawColor(201,168,76);
+      doc.setLineWidth(0.2);
+      doc.line(105,158,105,198);
+
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(28);
+      doc.setFont("helvetica","bold");
+      doc.text(String(count), 67, 178, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("LIFE EXPERIENCES", 67, 188, {align:"center"});
+
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(28);
+      doc.setFont("helvetica","bold");
+      doc.text(String(doneCount||0), 143, 178, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("COMPLETED", 143, 188, {align:"center"});
+
+      // Profile summary if answers exist
+      if(ans.stage||ans.location){
+        doc.setTextColor(...MIST_C);
+        doc.setFontSize(8);
+        doc.setFont("helvetica","italic");
+        const profile=[ans.location,ans.stage].filter(Boolean).join("  ·  ");
+        doc.text(profile, W/2, 220, {align:"center"});
+      }
+
+      // Bottom decoration
+      doc.setFillColor(...GOLD);
+      doc.rect(0,H-9,W,1.5,"F");
+      doc.setFillColor(...TEAL);
+      doc.rect(0,H-9,W,9,"F");
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(7);
+      doc.setFont("helvetica","bold");
+      doc.text("PREMIUM EDITION  ✦  Generated "+new Date().toLocaleDateString("en-US",{month:"long",year:"numeric"}), W/2, H-3, {align:"center"});
+
+      // ── EXPERIENCE PAGES ─────────────────────────────────────────────────
+      const byCategory={};
+      items.forEach(item=>{
+        const cat=item.category||"Adventures";
+        if(!byCategory[cat]) byCategory[cat]=[];
+        byCategory[cat].push(item);
+      });
+
+      const CAT_ICONS={"Travel & Culture":"✈","Adventure & Outdoors":"⛰","Food & Drink":"◎","Wellness & Mindfulness":"✧","Creative & Arts":"◇","Personal Growth":"✦","Learning & Skills":"◑","Relationships & Connection":"♡"};
+
+      for(const [cat,catItems] of Object.entries(byCategory)){
+        // Category title page (mini)
+        doc.addPage();
+        doc.setFillColor(...INK_C);
+        doc.rect(0,0,W,H,"F");
+
+        // Category header band
+        doc.setFillColor(...TEAL);
+        doc.rect(0,0,W,36,"F");
+        doc.setFillColor(...GOLD);
+        doc.rect(0,36,W,1.5,"F");
+
+        const icon=CAT_ICONS[cat]||"✦";
+        doc.setTextColor(...GOLD);
+        doc.setFontSize(14);
+        doc.setFont("helvetica","bold");
+        doc.text(icon, 20, 22);
+        doc.setTextColor(...IVY_C);
+        doc.setFontSize(14);
+        doc.setFont("helvetica","bold");
+        doc.text(cat.toUpperCase(), 32, 22);
+        doc.setTextColor(...MIST_C);
+        doc.setFontSize(8);
+        doc.setFont("helvetica","normal");
+        doc.text(`${catItems.length} experience${catItems.length!==1?"s":""}`, 190, 22, {align:"right"});
+
+        let y=50;
+        catItems.forEach((item,idx)=>{
+          if(y>H-45){
+            doc.addPage();
+            doc.setFillColor(...INK_C);
+            doc.rect(0,0,W,H,"F");
+            // Repeat category mini-header
+            doc.setFillColor(...TEAL);
+            doc.rect(0,0,W,14,"F");
+            doc.setTextColor(...GOLD);
+            doc.setFontSize(7);
+            doc.setFont("helvetica","bold");
+            doc.text(cat.toUpperCase()+" (cont.)", 20, 9);
+            y=22;
+          }
+
+          const isDone=item.done;
+          const cardH=isDone?24:(item.why?58:44);
+
+          // Card background
+          doc.setFillColor(isDone?10:14, isDone?35:58, isDone?35:58);
+          doc.rect(16,y-2,178,cardH,"F");
+          if(!isDone){
+            doc.setDrawColor(...GOLD);
+            doc.setLineWidth(0.15);
+            doc.rect(16,y-2,178,cardH,"S");
+            // Gold left accent
+            doc.setFillColor(...GOLD);
+            doc.rect(16,y-2,2,cardH,"F");
+          }
+
+          // Number
+          doc.setTextColor(isDone?100:201, isDone?110:168, isDone?110:76);
+          doc.setFontSize(7);
+          doc.setFont("helvetica","bold");
+          doc.text(String(idx+1).padStart(2,"0"), 22, y+5);
+
+          // Checkbox
+          doc.setDrawColor(...GOLD);
+          doc.setLineWidth(0.4);
+          doc.rect(31,y,5.5,5.5);
+          if(isDone){
+            doc.setFillColor(...GOLD);
+            doc.rect(31,y,5.5,5.5,"F");
+            doc.setTextColor(...INK_C);
+            doc.setFontSize(6);
+            doc.text("✓",32.2,y+4.2);
+          }
+
+          // Title
+          doc.setTextColor(isDone?MIST_C:IVY_C);
+          doc.setFontSize(11);
+          doc.setFont("helvetica","bold");
+          const titleLines=doc.splitTextToSize(item.title, 120);
+          doc.text(titleLines[0], 40, y+5);
+
+          // Location + difficulty on right
+          if(item.location){
+            doc.setTextColor(...GOLD);
+            doc.setFontSize(7);
+            doc.setFont("helvetica","normal");
+            doc.text("📍 "+item.location.split(",")[0], 190, y+5, {align:"right"});
+          }
+          if(item.difficulty&&!isDone){
+            doc.setTextColor(...MIST_C);
+            doc.setFontSize(6.5);
+            doc.setFont("helvetica","bold");
+            doc.text(item.difficulty, 190, y+12, {align:"right"});
+          }
+
+          if(!isDone){
+            // Description
+            if(item.description){
+              doc.setTextColor(...MIST_C);
+              doc.setFontSize(8);
+              doc.setFont("helvetica","italic");
+              const descLines=doc.splitTextToSize(item.description, 150);
+              doc.text(descLines[0], 40, y+14);
+            }
+
+            // Why
+            if(item.why){
+              doc.setTextColor(180,155,60);
+              doc.setFontSize(7.5);
+              doc.setFont("helvetica","normal");
+              const whyText="→ "+item.why;
+              const whyLines=doc.splitTextToSize(whyText, 150);
+              doc.text(whyLines[0], 40, y+24);
+            }
+
+            // Next Steps (first one)
+            if(item.nextSteps&&item.nextSteps.length){
+              doc.setTextColor(...MIST_C);
+              doc.setFontSize(7);
+              doc.setFont("helvetica","normal");
+              const step1="First step: "+item.nextSteps[0];
+              const stepLines=doc.splitTextToSize(step1, 150);
+              doc.text(stepLines[0], 40, item.why?y+34:y+24);
+            }
+
+            // Booking link label
+            const affUrl=getAffiliateUrl(item);
+            doc.setTextColor(...GOLD);
+            doc.setFontSize(6.5);
+            doc.setFont("helvetica","bold");
+            doc.textWithLink("Book / Research this experience →", 40, item.why?y+44:y+36, {url:affUrl});
+          }
+
+          y+=cardH+6;
+        });
+
+        // Page footer
+        doc.setTextColor(...MIST_C);
+        doc.setFontSize(7);
+        doc.setFont("helvetica","normal");
+        doc.text(`${name}'s Bucket List  ·  ${cat}  ·  thebucketlistai.com`, W/2, H-6, {align:"center"});
+      }
+
+      // ── FINAL REFLECTION PAGE ────────────────────────────────────────────
+      doc.addPage();
+      doc.setFillColor(...INK_C);
+      doc.rect(0,0,W,H,"F");
+
+      doc.setFillColor(...TEAL);
+      doc.rect(20,60,170,160,"F");
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.4);
+      doc.rect(20,60,170,160,"S");
+
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(10);
+      doc.text("✦", W/2, 50, {align:"center"});
+
+      doc.setTextColor(...IVY_C);
+      doc.setFontSize(22);
+      doc.setFont("helvetica","bold");
+      doc.text("This is your list.", W/2, 80, {align:"center"});
+
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(10);
+      doc.setFont("helvetica","normal");
+      const r1="Not a generic collection of experiences.";
+      const r2="A list built from your values, your vision, and what you said matters most.";
+      const r3="Every item belongs here because you do.";
+      doc.text(r1, W/2, 96, {align:"center"});
+      doc.text(r2, W/2, 108, {align:"center"});
+      doc.text(r3, W/2, 120, {align:"center"});
+
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.3);
+      doc.line(60,132,150,132);
+
+      if(ans.regret){
+        doc.setTextColor(180,155,60);
+        doc.setFontSize(9);
+        doc.setFont("helvetica","italic");
+        const valLines=doc.splitTextToSize("\""+ans.regret+"\"", 140);
+        valLines.slice(0,3).forEach((line,i)=>{
+          doc.text(line, W/2, 142+(i*12), {align:"center"});
+        });
+      }
+
+      doc.setTextColor(...GOLD);
+      doc.setFontSize(9);
+      doc.setFont("helvetica","bold");
+      doc.text("THE BUCKET LIST AI", W/2, 196, {align:"center"});
+      doc.setTextColor(...MIST_C);
+      doc.setFontSize(8);
+      doc.setFont("helvetica","normal");
+      doc.text("Your Dreams. One Lifetime.  ·  thebucketlistai.com", W/2, 206, {align:"center"});
+
+      doc.save(`${(name||"my").toLowerCase().replace(/\s+/g,"-")}-premium-bucket-list.pdf`);
+      setGenerating(false);
+      setPremiumDone(true);
+    }catch(e){
+      console.error("Premium PDF error:",e);
+      setGenerating(false);
+      alert("PDF generation failed. Please try again.");
+    }
+  }
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.88)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:24,overflowY:"auto"}} onClick={onClose}>
+      <div style={{background:"#0A2828",border:"1px solid rgba(201,168,76,.4)",maxWidth:560,width:"100%",borderRadius:2,overflow:"hidden"}} onClick={e=>e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{background:"linear-gradient(135deg,#071E1E,#0E3A3A)",padding:"24px 28px 0",borderBottom:"1px solid rgba(201,168,76,.15)"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+            <div style={{fontSize:9,fontWeight:700,letterSpacing:".22em",color:G,fontFamily:SANS,textTransform:"uppercase"}}>Download Your List</div>
+            <button onClick={onClose} style={{background:"none",border:"none",color:MIST,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+          </div>
+
+          {/* Tab switcher */}
+          <div style={{display:"flex",gap:0,borderBottom:"1px solid rgba(201,168,76,.15)"}}>
+            {[["free","Free PDF"],["premium","✦ Premium PDF — $9.99"]].map(([key,label])=>(
+              <button key={key} onClick={()=>setTab(key)}
+                style={{flex:key==="premium"?1.4:1,padding:"12px 16px",background:"none",border:"none",borderBottom:`2px solid ${tab===key?G:"transparent"}`,color:tab===key?G:MIST,fontSize:key==="premium"?12:11,fontWeight:700,letterSpacing:".1em",cursor:"pointer",fontFamily:SANS,textTransform:"uppercase",transition:"all .2s"}}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{padding:"24px 28px"}}>
+
+          {/* ── FREE TAB ── */}
+          {tab==="free"&&(
+            <>
+              {/* Mini preview */}
+              <div style={{background:"#041212",border:"1px solid rgba(201,168,76,.2)",padding:"16px",marginBottom:20,position:"relative"}}>
+                <div style={{height:1,background:`linear-gradient(to right,transparent,${G},transparent)`,marginBottom:10}}/>
+                <div style={{textAlign:"center",marginBottom:10}}>
+                  <div style={{fontSize:8,color:G,letterSpacing:".2em",fontFamily:SANS,fontWeight:700,marginBottom:4}}>THE BUCKET LIST AI</div>
+                  <div style={{fontFamily:SERIF,fontSize:20,color:IVY,letterSpacing:-1,lineHeight:1.1,marginBottom:2}}>{name}'s</div>
+                  <div style={{fontFamily:SERIF,fontSize:16,color:IVY,letterSpacing:-1}}>Bucket List</div>
+                  <div style={{height:1,background:G,margin:"6px 40px",opacity:.5}}/>
+                  <div style={{fontSize:7,color:G,letterSpacing:".16em",fontFamily:SANS}}>ONE WILD AND PRECIOUS LIFE</div>
+                </div>
+                {items.slice(0,3).map((item,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"3px 0",borderBottom:"1px solid rgba(201,168,76,.07)"}}>
+                    <div style={{width:7,height:7,border:`1px solid ${G}`,flexShrink:0}}/>
+                    <div style={{fontSize:8,color:IVY,fontFamily:SANS,fontWeight:600,flex:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{item.title}</div>
+                    <div style={{fontSize:7,color:G,fontFamily:SANS,whiteSpace:"nowrap"}}>{item.location?.split(",")[0]}</div>
+                  </div>
+                ))}
+                <div style={{textAlign:"center",marginTop:5}}>
+                  <span style={{fontSize:7,color:MIST,fontFamily:SANS}}>+ {Math.max(0,count-3)} more experiences</span>
+                </div>
+              </div>
+
+              <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:20}}>
+                {["Title + location for each item","Organized by category","Printable at home","Clean dark design"].map(f=>(
+                  <div key={f} style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:MIST,fontFamily:SANS}}>
+                    <span style={{color:G}}>✓</span>{f}
+                  </div>
+                ))}
+              </div>
+
+              {!done?(
+                <>
+                  <button onClick={generateFreePDF} disabled={generating} className="btn-gold"
+                    style={{width:"100%",background:generating?"rgba(201,168,76,.3)":G,border:"none",color:generating?G:INK,padding:"15px 24px",fontSize:12,fontWeight:700,letterSpacing:".16em",textTransform:"uppercase",cursor:generating?"not-allowed":"pointer",fontFamily:SANS,display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:10}}>
+                    {generating?<><div style={{width:15,height:15,border:`2px solid ${G}`,borderTopColor:"transparent",borderRadius:"50%",animation:"spin 1s linear infinite"}}/> Generating…</>:"⬇ Download Free PDF"}
+                  </button>
+                  <div style={{textAlign:"center",marginBottom:16}}>
+                    <button onClick={()=>setTab("premium")} style={{background:"none",border:"none",color:G,fontSize:11,fontFamily:SANS,cursor:"pointer",letterSpacing:".08em"}}>
+                      Want photos, booking links & your 'why'? → Upgrade for $9.99
+                    </button>
+                  </div>
+                </>
+              ):(
+                <div style={{textAlign:"center",padding:"16px 0"}}>
+                  <div style={{fontSize:32,marginBottom:10}}>🎉</div>
+                  <div style={{fontFamily:SERIF,fontSize:22,color:IVY,marginBottom:8,fontWeight:400}}>Your PDF is ready!</div>
+                  <p style={{fontSize:13,color:MIST,fontFamily:SANS,lineHeight:1.7,marginBottom:20}}>Check your downloads. Print it, frame it, or share it.</p>
+                  <button onClick={()=>setTab("premium")} className="btn-gold"
+                    style={{background:G,border:"none",color:INK,padding:"14px 32px",fontSize:11,fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,marginBottom:12}}>
+                    ✦ Upgrade to Premium PDF — $9.99
+                  </button>
+                  <br/>
+                  <button onClick={onClose} style={{background:"none",border:"1px solid rgba(201,168,76,.3)",color:MIST,padding:"10px 28px",fontSize:11,cursor:"pointer",fontFamily:SANS,letterSpacing:".12em",textTransform:"uppercase",marginTop:8}}>
+                    Back to My List
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ── PREMIUM TAB ── */}
+          {tab==="premium"&&(
+            <>
+              {/* Premium preview mockup */}
+              <div style={{background:"#041212",border:"1px solid rgba(201,168,76,.35)",padding:"16px",marginBottom:20,position:"relative",overflow:"hidden"}}>
+                <div style={{background:"linear-gradient(to right,rgba(14,58,58,1),rgba(7,30,30,.3))",height:6,margin:"-16px -16px 12px",borderBottom:"2px solid rgba(201,168,76,.6)"}}/>
+                <div style={{textAlign:"center",marginBottom:10}}>
+                  <div style={{fontSize:7,color:G,letterSpacing:".2em",fontFamily:SANS,fontWeight:700,marginBottom:3}}>THE BUCKET LIST AI  ✦  PREMIUM EDITION</div>
+                  <div style={{fontFamily:SERIF,fontSize:22,color:IVY,letterSpacing:-1,lineHeight:1.0,marginBottom:2}}>{name}'s</div>
+                  <div style={{fontFamily:SERIF,fontSize:17,color:IVY}}>Bucket List</div>
+                  <div style={{height:1.5,background:G,margin:"6px 30px"}}/>
+                </div>
+                {items.slice(0,2).map((item,i)=>(
+                  <div key={i} style={{background:"rgba(14,58,58,.8)",border:"1px solid rgba(201,168,76,.25)",borderLeft:"2px solid rgba(201,168,76,.8)",padding:"8px 10px",marginBottom:6}}>
+                    <div style={{fontSize:9,color:IVY,fontFamily:SANS,fontWeight:700,marginBottom:3}}>{item.title}</div>
+                    {item.description&&<div style={{fontSize:7.5,color:MIST,fontFamily:SANS,fontStyle:"italic",marginBottom:3,lineHeight:1.4}}>{item.description?.slice(0,80)}...</div>}
+                    <div style={{fontSize:7,color:G,fontFamily:SANS}}>→ {item.why?.slice(0,60)||"Personalized reason for you"}...</div>
+                    <div style={{fontSize:7,color:"rgba(201,168,76,.6)",fontFamily:SANS,marginTop:3}}>📍 {item.location}  ·  Book this experience →</div>
+                  </div>
+                ))}
+                <div style={{textAlign:"center",marginTop:6,fontSize:7,color:MIST,fontFamily:SANS}}>+ {Math.max(0,count-2)} more with full details</div>
+              </div>
+
+              {/* Feature comparison */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:20}}>
+                {[
+                  ["✓","Title + Location","✓","Title + Location"],
+                  ["✓","Category sections","✓","Category sections with icons"],
+                  ["–","Personalized 'why'","✓","Your 'why' for every item"],
+                  ["–","Next steps","✓","First actionable step per item"],
+                  ["–","Booking links","✓","Direct affiliate links embedded"],
+                  ["–","Your values quoted","✓","Your words on the final page"],
+                ].slice(0,6).map(([fIcon,fLabel,pIcon,pLabel],i)=>(
+                  <React.Fragment key={i}>
+                    <div style={{fontSize:11,color:i<2?G:MIST,fontFamily:SANS,display:"flex",alignItems:"center",gap:5}}>
+                      <span style={{color:i<2?G:"rgba(245,237,216,.25)",minWidth:12}}>{fIcon}</span>{fLabel}
+                    </div>
+                    <div style={{fontSize:11,color:G,fontFamily:SANS,display:"flex",alignItems:"center",gap:5}}>
+                      <span style={{color:G,minWidth:12}}>{pIcon}</span>{pLabel}
+                    </div>
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {!premiumDone?(
+                <>
+                  <div style={{background:"rgba(201,168,76,.06)",border:"1px solid rgba(201,168,76,.2)",padding:"16px 20px",marginBottom:16,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div>
+                      <div style={{fontFamily:SERIF,fontSize:20,color:IVY}}>Premium PDF</div>
+                      <div style={{fontSize:11,color:MIST,fontFamily:SANS}}>One-time · Instant download</div>
+                    </div>
+                    <div style={{fontFamily:SERIF,fontSize:28,color:G}}>$9.99</div>
+                  </div>
+
+                  {/* If Stripe link is configured, show payment button. Otherwise show direct generate. */}
+                  {STRIPE_LINK.includes("REPLACE")?(
+                    <>
+                      <button onClick={generatePremiumPDF} disabled={generating} className="btn-gold"
+                        style={{width:"100%",background:generating?"rgba(201,168,76,.3)":G,border:"none",color:generating?G:INK,padding:"16px 24px",fontSize:13,fontWeight:700,letterSpacing:".16em",textTransform:"uppercase",cursor:generating?"not-allowed":"pointer",fontFamily:SANS,display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:10}}>
+                        {generating?<><div style={{width:15,height:15,border:`2px solid ${G}`,borderTopColor:"transparent",borderRadius:"50%",animation:"spin 1s linear infinite"}}/> Generating Premium PDF…</>:"⬇ Generate Premium PDF"}
+                      </button>
+                      <p style={{fontSize:10,color:MIST,fontFamily:SANS,textAlign:"center",opacity:.6}}>
+                        (Payment coming soon — generating free during launch)
+                      </p>
+                    </>
+                  ):(
+                    <>
+                      <button onClick={goToPremium} className="btn-gold"
+                        style={{width:"100%",background:G,border:"none",color:INK,padding:"16px 24px",fontSize:13,fontWeight:700,letterSpacing:".16em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:10}}>
+                        ✦ Unlock Premium PDF — $9.99
+                      </button>
+                      <p style={{fontSize:10,color:MIST,fontFamily:SANS,textAlign:"center",opacity:.7}}>
+                        Secure payment via Stripe · Opens in new tab · Then download instantly
+                      </p>
+                    </>
+                  )}
+                </>
+              ):(
+                <div style={{textAlign:"center",padding:"16px 0"}}>
+                  <div style={{fontSize:32,marginBottom:10}}>⭐</div>
+                  <div style={{fontFamily:SERIF,fontSize:22,color:IVY,marginBottom:8,fontWeight:400}}>Premium PDF ready!</div>
+                  <p style={{fontSize:13,color:MIST,fontFamily:SANS,lineHeight:1.7,marginBottom:20}}>Your full personalized list with every detail. Print it, frame it, live it.</p>
+                  <button onClick={onClose} style={{background:"none",border:"1px solid rgba(201,168,76,.3)",color:MIST,padding:"10px 28px",fontSize:11,cursor:"pointer",fontFamily:SANS,letterSpacing:".12em",textTransform:"uppercase"}}>
+                    Back to My List
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ShareModal({items,ans,onClose}){
+  const url=buildShareUrl(items,ans);
+  const [copied,setCopied]=useState(false);
+  function copy(){
+    if(!url) return;
+    navigator.clipboard.writeText(url).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);}).catch(()=>{
+      const el=document.createElement("textarea");el.value=url;document.body.appendChild(el);el.select();document.execCommand("copy");document.body.removeChild(el);setCopied(true);setTimeout(()=>setCopied(false),2500);
+    });
+  }
+  const name=ans.name||"";
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.82)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:24}} onClick={onClose}>
+      <div style={{background:CARD2,border:`1px solid rgba(201,168,76,.35)`,maxWidth:500,width:"100%",padding:40,textAlign:"center",borderRadius:2}} onClick={e=>e.stopPropagation()}>
+        <div style={{fontSize:40,color:G,marginBottom:16}}>✦</div>
+        <h2 style={{fontFamily:SERIF,fontSize:30,fontWeight:400,color:IVY,marginBottom:10}}>
+          {name?`Share ${name}'s List`:"Share Your List"}
+        </h2>
+        <p style={{fontSize:15,color:MIST,fontFamily:SANS,lineHeight:1.75,marginBottom:28}}>
+          Your entire bucket list lives in this link. Share it with anyone, bookmark it, or open it on any device.
+        </p>
+        {url?(
+          <>
+            <div style={{background:"rgba(7,30,30,.8)",border:`1px solid ${RULE}`,borderRadius:2,padding:"12px 16px",marginBottom:14}}>
+              <p style={{fontSize:12,color:G,fontFamily:SANS,wordBreak:"break-all",textAlign:"left",lineHeight:1.5}}>{url.length>72?url.slice(0,72)+"…":url}</p>
+            </div>
+            <button onClick={copy} className="btn-gold"
+              style={{width:"100%",background:copied?"#0B3D3D":G,border:copied?`1px solid ${G}`:"none",color:copied?G:INK,padding:16,fontSize:13,fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,marginBottom:12,borderRadius:2,transition:"all .3s"}}>
+              {copied?"✓ Copied to Clipboard!":"Copy Shareable Link ✦"}
+            </button>
+            <div style={{display:"flex",gap:10,justifyContent:"center",marginBottom:20}}>
+              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${ans.name?"My bucket list, "+ans.name+"'s":"My bucket list"} — ${items.length} experiences built around ${ans.regret?ans.regret.slice(0,40)+"…":"living fully"} ✦`)}&url=${encodeURIComponent(url)}`} target="_blank" rel="noopener noreferrer"
+                style={{background:"rgba(255,255,255,.06)",border:`1px solid ${RULE}`,color:MIST,padding:"9px 18px",fontSize:11,fontFamily:SANS,fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",borderRadius:2,display:"inline-block"}}>
+                Share on X
+              </a>
+              <a href={`https://wa.me/?text=${encodeURIComponent((ans.name?ans.name+"'s bucket list":"My bucket list")+" — "+items.length+" experiences worth having ✦ "+url)}`} target="_blank" rel="noopener noreferrer"
+                style={{background:"rgba(255,255,255,.06)",border:`1px solid ${RULE}`,color:MIST,padding:"9px 18px",fontSize:11,fontFamily:SANS,fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",borderRadius:2,display:"inline-block"}}>
+                WhatsApp
+              </a>
+            </div>
+          </>
+        ):(
+          <p style={{color:"#F87171",fontSize:14,fontFamily:SANS}}>Could not generate link. Please try again.</p>
+        )}
+        <button onClick={onClose} style={{background:"none",border:"none",color:MIST,fontSize:11,letterSpacing:".12em",cursor:"pointer",fontFamily:SANS,textTransform:"uppercase",fontWeight:500}}>Close</button>
+      </div>
+    </div>
+  );
+}
+
+/* ── MAILERLITE ──────────────────────────────────────────────────── */
+const ML_KEY="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiOWYyOTFmNWQ3MDFlOGJlYjA3NzgyYmYyYWRmYTU1NjZmODFjODRkZmQwOWMzMGUxNzdlZGQxY2U3ZDM3MmU3NjFiNWQzMmIwY2YyMTYyYzEiLCJpYXQiOjE3NzMwOTczNjIuNDkwNDIzLCJuYmYiOjE3NzMwOTczNjIuNDkwNDI3LCJleHAiOjQ5Mjg3NzA5NjIuNDgzMjY5LCJzdWIiOiIyMTk1NTEwIiwic2NvcGVzIjpbXX0.drAerNPINMbG2pO-_MMJxOAcrlF_06M5uQl7VT80jc9ypgd4dEG9NVQZ6hVVgV4jfPvsfPFbQNaAn2HzDZnamf3ZBZ6tQ8hv8MR-bHtBNRIZbJsQigQSHnoidcmVWiuyb4yRyo_q5IwhYELhh6sOtlieSjZHQe7sMaJfmzhPHU7Sqi-jvSlEZcGNlkIjm3tq7Ecr17KJM-NrCdN4Fzx4URi9m9xFTeYccgWWIEP46lIxwmUTEr8__X7tx5JTSrt0hI-gxjzdBEOLJxWE58niwkeiQNziUyEWJO9Relmkhv0NYurj9ejF4_MPqtixrcMw-T_lFtwkAVQo0pw1O_A0zDf8RblbAu4yDObm4jRqWN77YYWg1gieVd4Ubo3qry5lfLqFgg5WjrYztrP1ZPyPOx1TpKoekXl_FR5IgHqJH3rk6d8E8t8wsDs4j-mN6-RAz1Am6aa7wlTm0RPv0ohxG2hOX8TdEVvvMBlAI5NW5NWpVj5wHmtw53YotZ6ZszobVVDsjmfIBEvlR1ZK4PhXpR7y9yev2j_fD7DAXN4St0NJC_7j4ANAtgXX145k0rbjjEMrdopnfwC4It-Dg_O6Bw1tnW6LQPNFjWLWKk8J2oV03nCS9TrWL2GB-kYgkdVsTKLHy6c22VPD-euNHfWPWaD2kMivKE3XFG-Or399b4Wo";
+const ML_GROUP="181505937345873477";
+async function mlSubscribe(email,source){
+  try{
+    const r=await fetch("https://connect.mailerlite.com/api/subscribers",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+ML_KEY},
+      body:JSON.stringify({email,groups:[ML_GROUP],fields:{source:source||"thebucketlistai.com/app"}})
+    });
+    return r.ok||r.status===409;
+  }catch{return false;}
+}
+
+/* ── MAIN APP ────────────────────────────────────────────────────── */
+function App(){
+  const [screen,   setScreen]   = useState("hero");
+  const [mode,     setMode]     = useState(null);
+  const [step,     setStep]     = useState(0);
+  const [ans,      setAns]      = useState({});
+  const [txt,      setTxt]      = useState("");
+  const [items,    setItems]    = useState([]);
+  const [meta,     setMeta]     = useState({});
+  const [synthesis,setSynthesis]= useState("");
+  const [gmsg,     setGmsg]     = useState(GMSGS[0]);
+  const [filter,   setFilter]   = useState("All");
+  const [sortBy,   setSortBy]   = useState("default");
+  const [search,   setSearch]   = useState("");
+  const [celeb,    setCeleb]    = useState(null);
+  const [confetti, setConfetti] = useState([]);
+  const [noteDraft,setNoteDraft]= useState({});
+  const [showAdd,  setShowAdd]  = useState(false);
+  const [showEmail,setShowEmail]= useState(false);
+  const [showShare,setShowShare]= useState(false);
+  const [showPDF,  setShowPDF]  = useState(false);
+  const [milestone,setMilestone]= useState(null);
+  const [isShared, setIsShared] = useState(false);
+  const [error,    setError]    = useState(null);
+  const inputRef=useRef(null);
+
+  // Load saved state or shared list
+  useEffect(()=>{
+    const params=new URLSearchParams(window.location.search);
+    // Load shared list from URL
+    const listParam=params.get("list");
+    if(listParam){
+      const decoded=decodeList(listParam);
+      if(decoded?.items?.length){
+        const withPhotos=decoded.items.map(i=>({...i,photoUrl:FALLBACKS[i.category]||FALLBACKS["Travel & Culture"]}));
+        setItems(withPhotos);
+        setAns({name:decoded.name||""});
+        setMode("personal");
+        setIsShared(true);
+        setScreen("list");
+        return;
+      }
+    }
+    // Load from localStorage
+    const d=LS.get("bl-v9");
+    if(d?.items){setItems(d.items);setAns(d.ans||{});setMeta(d.meta||{});setMode(d.mode||"personal");setScreen("list");return;}
+    // Stripe payment success — auto-open premium PDF modal
+    const premiumSuccess=params.get("premium");
+    if(premiumSuccess==="1"){
+      // Try to restore list from sessionStorage if current list is empty
+      try{
+        const pending=sessionStorage.getItem("bl-premium-pending");
+        if(pending){
+          const {items:savedItems,ans:savedAns}=JSON.parse(pending);
+          if(savedItems?.length){
+            setItems(savedItems);
+            setAns(savedAns||{});
+            setScreen("list");
+            setTimeout(()=>setShowPDF(true),800);
+            sessionStorage.removeItem("bl-premium-pending");
+            return;
+          }
+        }
+      }catch(e){}
+      // If list already in state, just open PDF modal to premium tab
+      setTimeout(()=>setShowPDF(true),800);
+      return;
+    }
+    // Load mode from URL
+    const urlMode=params.get("mode");
+    if(urlMode&&["personal","couple","family","surprise"].includes(urlMode))
+      setTimeout(()=>selectMode(urlMode),100);
+  },[]);
+
+  useEffect(()=>{if(items.length>0) LS.set("bl-v9",{items,ans,meta,mode});},[items,meta,ans,mode]);
+
+  useEffect(()=>{
+    if(screen==="quiz"&&(STEPS[step]?.type==="text"||STEPS[step]?.type==="text_big"||STEPS[step]?.type==="text_big_values"))
+      setTimeout(()=>inputRef.current?.focus(),130);
+  },[screen,step]);
+
+  /* ── GENERATE ────────────────────────────────────────────────── */
+  async function generate(overrideAns){
+    setScreen("generating");setError(null);
+    let i=0;const iv=setInterval(()=>{i=(i+1)%GMSGS.length;setGmsg(GMSGS[i]);},2400);
+    const a=overrideAns||ans;
+    const count=parseCount(a.count)||25;
+    const modeCtx=mode==="couple"?"This is a shared bucket list for a couple — include romantic experiences, adventures for two, and places to fall in love together."
+      :mode==="family"?"This is a family bucket list — include adventures for children and parents together."
+      :"This is a personal bucket list.";
+
+    const personContext = [
+      a.name     ? `Name: ${a.name}` : "",
+      a.location ? `Home city / country: ${a.location}` : "",
+      a.stage    ? `Life stage: ${a.stage}` : "",
+      a.regret   ? `What they want their life to have been about (their deepest values): "${a.regret}"` : "",
+      a.future   ? `Their 10-year vision — what success looks like: "${a.future}"` : "",
+      a.fear     ? `The one thing they keep postponing (MUST appear on the list): "${a.fear}"` : "",
+      a.categories?.length ? `Experience types they want: ${a.categories.join(", ")}` : "",
+      a.difficulty?.length ? `Timeframe they want experiences in: ${a.difficulty.join(", ")}` : "",
+    ].filter(Boolean).join("\n");
+
+    // Build difficulty distribution instruction
+    const diffMap = {
+      "Something this weekend": "This Weekend",
+      "A goal for this year": "This Year",
+      "A big challenge to work toward": "Epic Goal",
+      "A dream for one day": "Lifetime Dream",
+    };
+    const chosenDiffs = (a.difficulty||[]).map(d=>diffMap[d]||d);
+    const diffInstruction = chosenDiffs.length
+      ? `DIFFICULTY DISTRIBUTION: The person chose: ${chosenDiffs.join(", ")}. Distribute items accordingly — if they chose "This Weekend" and "This Year", at least 40% of items must have those difficulties. Do NOT give someone who wants weekend adventures mostly Lifetime Dreams.`
+      : "Include a healthy mix of difficulty levels.";
+
+    const surpriseInstruction = mode==="surprise"
+      ? "SURPRISE MODE: Include 3-5 items they would never have thought of themselves but will read and think 'how did it know?' — things that arise naturally from their values and vision but are unexpected. Label these with difficulty 'Epic Goal' or 'Lifetime Dream'."
+      : "";
+
+    const prompt=`You are the world's most perceptive life coach and experience curator. You are building a personalised bucket list for ${a.name||"someone special"}.
+${modeCtx}
+
+═══ THEIR PROFILE ═══
+${personContext}
+
+═══ YOUR MISSION ═══
+Build a list that could ONLY belong to this exact person. Not a generic list with their name on it.
+Every single item must connect to something real they shared — their specific words, their vision, their values, their location, or the thing they keep postponing.
+
+${diffInstruction}
+
+${surpriseInstruction}
+
+═══ QUALITY RULES — READ THESE CAREFULLY ═══
+
+RULE 1 — SPECIFICITY (most important rule):
+❌ BAD: "Travel to Japan"
+❌ BAD: "Go on a safari"
+❌ BAD: "Learn a new language"
+✅ GOOD: "Spend 12 Days Driving the Amalfi Coast in a Convertible"
+✅ GOOD: "Track Leopards at Londolozi Private Game Reserve, Sabi Sands"
+✅ GOOD: "Reach B2 French and Spend a Month in Lyon Without Speaking English"
+The title must name the specific place, operator, experience, or achievement — not the generic category.
+
+RULE 2 — ECHO THEIR EXACT WORDS BACK TO THEM:
+The description and why fields must make the person feel seen. The technique: find the most specific phrase they used, and build the item around it.
+
+❌ BAD description: "A chance to experience something extraordinary."
+❌ BAD why: "Because you value adventure and new experiences."
+✅ GOOD description (if they wrote "I want to have taken my kids to see the places I grew up hearing about"):
+   "This is the trip you grew up hearing about — now you're the one describing it to your kids on the plane."
+✅ GOOD why (if they wrote "I want to wake up near the ocean"):
+   "Because your Tuesday morning starts near water in the life you described — this is where that version of you begins."
+✅ GOOD why (if they wrote a specific fear about running a marathon):
+   "Because you've signed up twice and not done it — this is the version where you actually cross the finish line."
+
+Find one specific phrase from what they wrote. Make the why field feel like you read their mind.
+
+RULE 3 — DESCRIPTIONS MUST SOUND LIKE CONVERSATION, NOT MARKETING COPY:
+❌ BAD: "An unforgettable journey through the heart of Southeast Asia."
+❌ BAD: "A transformative experience that will stay with you forever."  
+✅ GOOD: "Three weeks of slow travel where you don't have a plan past the first city — the kind you keep describing to people and then not booking."
+✅ GOOD: "The marathon you've been almost ready for since 2019. This is the year the training plan actually runs to completion."
+Write like a perceptive friend who listened carefully, not a travel brochure.
+
+RULE 4 — NEXT STEPS MUST BE ACTIONABLE FROM WHERE THEY LIVE:
+❌ BAD: "Research options online."
+❌ BAD: "Book a flight."
+✅ GOOD: "Check direct flights from ${a.location||"your city"} — British Airways and Emirates both fly direct. Budget £900 return in shoulder season."
+✅ GOOD: "The Inca Trail lottery opens February 1 each year — set a reminder now. Operators: G Adventures and Intrepid both have licensed spots."
+Each next step should feel like advice from a friend who knows them AND knows the destination.
+
+RULE 5 — THE POSTPONED THING MUST APPEAR:
+${a.fear ? `They specifically said they keep postponing: "${a.fear}". This MUST appear as one of the items, treated with the same specificity and care as everything else. Make it feel like permission — not a chore.` : "If they shared something they keep putting off, make sure it appears."}
+
+RULE 6 — LOCATION GROUNDING:
+Include 2-4 items that are genuinely accessible from ${a.location||"their home"} — things they could do without a long-haul flight. This makes the list feel real, not aspirational tourism.
+
+═══ OUTPUT FORMAT ═══
+Return your response in EXACTLY this structure — nothing else:
+
+SYNTHESIS: [Write 2-3 sentences in second person, spoken directly to ${a.name||"them"}. This is your synthesis of who they are based on everything they shared. Reference their specific words. Sound like a brilliant friend who listened carefully, not a therapist or a brochure. Example: "What strikes me about you, Sarah, is that you're not chasing novelty — you're chasing the feeling of being fully present in your own life. Your vision of that Tuesday morning near the ocean isn't about escape, it's about arrival. This list is built around that."]
+
+JSON: [A valid JSON array of exactly ${count} items — no markdown, no backticks, pure JSON]
+
+[{
+  "id": "unique-kebab-slug",
+  "title": "Specific Named Experience — Max 10 Words",
+  "location": "Named City, Country or Specific Region",
+  "category": "one of: ${CAT_KEYS.join(",")}",
+  "difficulty": "one of: This Weekend,This Year,Epic Goal,Lifetime Dream",
+  "description": "One sentence that references this person's specific values, words, or vision. Written for them personally, not as a template.",
+  "why": "Because [direct reference to something specific they wrote or their life stage truth].",
+  "nextSteps": [
+    "Specific step 1 — named operator, real cost, or actual logistics from ${a.location||"their location"}",
+    "Specific step 2 — timing, permit, booking window, or preparation needed",
+    "Specific step 3 — the human detail that makes this feel possible rather than abstract"
+  ]
+}]`;
+
+    try{
+      const res=await fetch("/.netlify/functions/generate",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({prompt,count}),
+      });
+      const raw=await res.text();
+      if(!res.ok){let m=`API error ${res.status}`;try{m=JSON.parse(raw)?.error?.message||m;}catch{}throw new Error(m);}
+      const data=JSON.parse(raw);
+      if(data.error) throw new Error(data.error.message);
+      const txt2=data.content?.find(b=>b.type==="text")?.text||"";
+      // Extract synthesis paragraph
+      const synthMatch=txt2.match(/SYNTHESIS:\s*([\s\S]*?)(?=JSON:|\[)/i);
+      const synthText=(synthMatch?.[1]||"").trim().replace(/^\[|\]$/g,"").trim();
+      if(synthText) setSynthesis(synthText);
+      // Extract JSON array
+      const match=txt2.match(/\[[\s\S]*\]/);
+      if(!match) throw new Error("No JSON array in response");
+      // Repair truncated JSON — close any open array/object
+      let jsonStr=match[0];
+      function repairJSON(s){
+        // Remove trailing comma before attempting close
+        s=s.replace(/,\s*$/,"");
+        // Count open braces/brackets
+        let opens=0,openb=0;
+        for(const ch of s){if(ch==="{")opens++;else if(ch==="}")opens--;else if(ch==="[")openb++;else if(ch==="]")openb--;}
+        // Close any unclosed objects then array
+        while(opens>0){s+="}";opens--;}
+        while(openb>0){s+="]";openb--;}
+        return s;
+      }
+      try{
+        var list=JSON.parse(jsonStr);
+      }catch(e){
+        try{
+          var list=JSON.parse(repairJSON(jsonStr));
+        }catch(e2){
+          throw new Error("Could not parse list — please try again");
+        }
+      }
+      if(!Array.isArray(list)||!list.length) throw new Error("Empty list");
+      // Use AI-generated nextSteps, with smart fallback if missing
+      const withSteps=list.map(item=>({
+        ...item,
+        nextSteps: item.nextSteps?.length ? item.nextSteps : [
+          `Research the best time of year for ${item.title}`,
+          `Connect with others who have done this — search Reddit or travel forums for first-hand advice`,
+          `Set a specific date or year target and put it in your calendar now`
+        ]
+      }));
+      clearInterval(iv);
+      setGmsg("Finding beautiful photographs for your experiences...");
+      const withPhotos=await bakePhotos(withSteps);
+      setItems(withPhotos);setMeta({});setScreen("list");
+    }catch(e){
+      clearInterval(iv);
+      setError(`Could not generate your list: ${e.message}. Please try again.`);
+      setScreen("quiz");
+    }
+  }
+
+  /* ── MODE SELECTION ──────────────────────────────────────────── */
+  function selectMode(m){
+    setMode(m);
+    if(m==="surprise"){
+      const sa={name:"Explorer",count:"25 — a life well lived",categories:CAT_KEYS,stage:"thirties",regret:"",future:""};
+      setAns(sa);generate(sa);
+    } else {setStep(0);setScreen("quiz");}
+  }
+
+  /* ── QUIZ NAV ────────────────────────────────────────────────── */
+  function nextStep(){
+    const s=STEPS[step];
+    if(s.type==="text"||s.type==="text_big"||s.type==="text_big_values"){if(!txt.trim())return;setAns(p=>({...p,[s.id]:txt.trim()}));setTxt("");}
+    // Show email capture after step 3 (values) — invested but not delivered yet
+    if(step===3&&!LS.get("bl-email")){
+      setTimeout(()=>setShowEmail(true),400);
+    }
+    if(step<STEPS.length-1) setStep(n=>n+1); else generate();
+  }
+  function selectSingle(opt){
+    const newAns={...ans,[STEPS[step].id]:opt};
+    setAns(newAns);
+    setTimeout(()=>{if(step<STEPS.length-1)setStep(n=>n+1);else generate(newAns);},260);
+  }
+  function selectSingleIcon(opt){
+    const newAns={...ans,[STEPS[step].id]:opt.label};
+    setAns(newAns);
+    setTimeout(()=>{if(step<STEPS.length-1)setStep(n=>n+1);else generate(newAns);},260);
+  }
+  function toggleMulti(opt){const id=STEPS[step].id;setAns(p=>{const c=p[id]||[];return{...p,[id]:c.includes(opt)?c.filter(o=>o!==opt):[...c,opt]};});}
+
+  /* ── MILESTONES ──────────────────────────────────────────────── */
+  const MILESTONES={
+    25:{pct:25,icon:"✦",msg:"First quarter done.",sub:"You're not just dreaming anymore."},
+    50:{pct:50,icon:"◎",msg:"Halfway through your list.",sub:"Most people never get here. You did."},
+    100:{pct:100,icon:"★",msg:"Every dream. Done.",sub:"This is what a life well lived looks like."},
+  };
+  const shownMilestones=React.useRef(new Set());
+
+  /* ── LIST ACTIONS ────────────────────────────────────────────── */
+  const gm=id=>meta[id]||{};
+  function toggleDone(id){
+    const m=gm(id);const isDone=!!m.done;
+    setMeta(p=>({...p,[id]:{...m,done:!isDone,doneDate:isDone?null:Date.now()}}));
+    if(!isDone){
+      setCeleb(id);setTimeout(()=>setCeleb(null),1200);
+      setConfetti(Array.from({length:22},(_,i)=>({id:i,x:Math.random()*100,color:[G,GL,"#fff","#6EE7B7","#4ECDC4"][i%5],delay:Math.random()*.5,size:Math.random()*6+4})));
+      setTimeout(()=>setConfetti([]),1400);
+      // Check for milestone
+      const newDone=items.filter(i=>i.id===id||gm(i.id).done).length;
+      const newPct=items.length?Math.round(newDone/items.length*100):0;
+      [25,50,100].forEach(mp=>{
+        if(newPct>=mp&&!shownMilestones.current.has(mp)){
+          shownMilestones.current.add(mp);
+          setTimeout(()=>{setMilestone(MILESTONES[mp]);setTimeout(()=>setMilestone(null),4000);},800);
+        }
+      });
+    }
+  }
+  function toggleStar(id){const m=gm(id);setMeta(p=>({...p,[id]:{...m,starred:!m.starred}}));}
+  function openNote(id){setMeta(p=>({...p,[id]:{...gm(id),noteOpen:true}}));setNoteDraft(p=>({...p,[id]:gm(id).note||""}));}
+  function closeNote(id){setMeta(p=>({...p,[id]:{...gm(id),noteOpen:false}}));}
+  function saveNote(id){setMeta(p=>({...p,[id]:{...gm(id),note:noteDraft[id]||"",noteOpen:false}}));}
+  function removeItem(id){setItems(p=>p.filter(i=>i.id!==id));}
+  function reset(){setScreen("hero");setItems([]);setMeta({});setSynthesis("");setAns({});setMode(null);setStep(0);LS.set("bl-v9",null);}
+
+  /* ── FILTERED/SORTED LIST ────────────────────────────────────── */
+  const displayed=React.useMemo(()=>{
+    let arr=[...items];
+    if(filter!=="All") arr=arr.filter(i=>i.category===filter||i.difficulty===filter);
+    if(search) arr=arr.filter(i=>(i.title+i.location+i.description).toLowerCase().includes(search.toLowerCase()));
+    if(sortBy==="starred") arr.sort((a,b)=>(gm(b.id).starred?1:0)-(gm(a.id).starred?1:0));
+    else if(sortBy==="undone") arr.sort((a,b)=>(gm(a.id).done?1:0)-(gm(b.id).done?1:0));
+    else if(sortBy==="difficulty"){const o=["This Weekend","This Year","Epic Goal","Lifetime Dream"];arr.sort((a,b)=>o.indexOf(a.difficulty)-o.indexOf(b.difficulty));}
+    else if(sortBy==="category") arr.sort((a,b)=>a.category.localeCompare(b.category));
+    return arr;
+  },[items,filter,search,sortBy,meta]);
+
+  const doneCount=items.filter(i=>gm(i.id).done).length;
+  const starCount=items.filter(i=>gm(i.id).starred).length;
+  const pct=items.length?Math.round(doneCount/items.length*100):0;
+
+  /* ══════════════════════════════════════════════════════════════
+     SCREENS
+  ══════════════════════════════════════════════════════════════ */
+
+  /* ── HERO ────────────────────────────────────────────────────── */
+  if(screen==="hero") return(
+    <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"60px 20px",position:"relative",zIndex:1}}>
+
+      {confetti.map(c=>(
+        <div key={c.id} style={{position:"fixed",top:"40%",left:`${c.x}%`,width:c.size,height:c.size,background:c.color,borderRadius:c.size/2,animation:`confettiFall 1.2s ease ${c.delay}s both`,zIndex:999,pointerEvents:"none"}}/>
+      ))}
+
+      {/* Back to site */}
+      <a href="/" style={{position:"absolute",top:24,left:24,color:MIST,fontSize:11,fontFamily:SANS,letterSpacing:".14em",textTransform:"uppercase",textDecoration:"none",display:"flex",alignItems:"center",gap:6,fontWeight:500,transition:"color .2s"}}
+        onMouseOver={e=>e.currentTarget.style.color=G} onMouseOut={e=>e.currentTarget.style.color=MIST}>
+        ← Back
+      </a>
+
+      <div style={{maxWidth:680,width:"100%",textAlign:"center",animation:"riseIn .8s cubic-bezier(.22,1,.36,1) both"}}>
+        <Logo/>
+        <div style={{marginTop:48,marginBottom:20}}>
+          <div style={{fontSize:10,fontWeight:600,letterSpacing:".3em",textTransform:"uppercase",color:G,display:"flex",alignItems:"center",gap:12,justifyContent:"center",marginBottom:20}}>
+            <span style={{display:"inline-block",width:20,height:1,background:G}}/>
+            Your Personal Life List
+            <span style={{display:"inline-block",width:20,height:1,background:G}}/>
+          </div>
+          <h1 style={{fontFamily:SERIF,fontSize:"clamp(44px,8vw,88px)",fontWeight:400,lineHeight:.9,letterSpacing:"-2px",color:IVY,marginBottom:20}}>
+            One Lifetime.<br/><em style={{color:G}}>Make It Count.</em>
+          </h1>
+          <p style={{fontSize:"clamp(15px,2vw,18px)",color:MIST,lineHeight:1.8,fontWeight:300,maxWidth:480,margin:"0 auto 40px"}}>
+            Answer 7 questions. We build a personalized bucket list that's entirely yours — with a plan to actually live it.
+          </p>
+        </div>
+
+        <Rule mb={36} op={.4}/>
+
+        {/* Mode cards */}
+        <p style={{fontSize:10,fontWeight:600,letterSpacing:".26em",textTransform:"uppercase",color:GD,marginBottom:20,fontFamily:SANS}}>Choose Your Experience</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:14,maxWidth:480,margin:"0 auto 36px"}}>
+          {MODES.map(m=>(
+            <button key={m.id} onClick={()=>selectMode(m.id)} className="mode-card"
+              style={{background:CARD,border:`1px solid ${RULE}`,padding:"22px 16px",cursor:"pointer",textAlign:"center",transition:"all .3s cubic-bezier(.22,1,.36,1)",borderRadius:2}}>
+              <div style={{fontSize:24,marginBottom:8,color:G}}>{m.icon}</div>
+              <div style={{fontFamily:BASK,fontSize:16,color:IVY,fontWeight:700,marginBottom:4}}>{m.label}</div>
+              <div style={{fontSize:12,color:MIST,fontFamily:SANS,fontWeight:300}}>{m.sub}</div>
+            </button>
+          ))}
+        </div>
+
+        <Rule mt={0} mb={28} op={.25}/>
+        <div style={{display:"flex",alignItems:"center",gap:28,justifyContent:"center",flexWrap:"wrap"}}>
+          {["Free Forever","AI-Personalized","Next Steps Included","1,000+ Experiences"].map(f=>(
+            <span key={f} style={{fontSize:11,color:GD,fontFamily:SANS,fontWeight:500,letterSpacing:".1em",display:"flex",alignItems:"center",gap:5}}>
+              <span style={{color:G}}>✦</span>{f}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  /* ── QUIZ ─────────────────────────────────────────────────────── */
+  if(screen==="quiz"){
+    const s=STEPS[step];
+    const progress=((step+1)/STEPS.length)*100;
+    const multiSel=ans[s.id]||[];
+
+    return(
+      <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"60px 20px",position:"relative",zIndex:1}}>
+
+        {/* Progress bar */}
+        <div style={{position:"fixed",top:0,left:0,right:0,height:3,background:"rgba(201,168,76,.12)",zIndex:100}}>
+          <div style={{height:"100%",background:`linear-gradient(to right,${G},${GL})`,width:`${progress}%`,transition:"width .5s cubic-bezier(.22,1,.36,1)"}}/>
+        </div>
+
+        <button onClick={()=>step===0?setScreen("hero"):setStep(n=>n-1)}
+          style={{position:"absolute",top:24,left:24,background:"none",border:"none",color:MIST,fontSize:11,fontFamily:SANS,letterSpacing:".14em",textTransform:"uppercase",cursor:"pointer",display:"flex",alignItems:"center",gap:6,fontWeight:500}}
+          onMouseOver={e=>e.currentTarget.style.color=G} onMouseOut={e=>e.currentTarget.style.color=MIST}>
+          ← Back
+        </button>
+
+        <div style={{maxWidth:600,width:"100%",animation:"riseIn .5s cubic-bezier(.22,1,.36,1) both"}}>
+          <Logo/>
+          {/* Step affirmation — shows after emotional steps */}
+          {step===3&&ans.regret&&(
+            <div style={{marginTop:28,padding:"12px 20px",background:"rgba(201,168,76,.07)",border:`1px solid rgba(201,168,76,.2)`,borderLeft:`2px solid ${G}`,marginBottom:-8}}>
+              <p style={{fontSize:12,color:G,fontFamily:SANS,fontWeight:300,fontStyle:"italic",lineHeight:1.6}}>
+                ✦ Good. That's the kind of detail that makes a list feel like yours.
+              </p>
+            </div>
+          )}
+          {step===4&&ans.future&&(
+            <div style={{marginTop:28,padding:"12px 20px",background:"rgba(201,168,76,.07)",border:`1px solid rgba(201,168,76,.2)`,borderLeft:`2px solid ${G}`,marginBottom:-8}}>
+              <p style={{fontSize:12,color:G,fontFamily:SANS,fontWeight:300,fontStyle:"italic",lineHeight:1.6}}>
+                ✦ That's a clear picture. We'll build toward exactly that.
+              </p>
+            </div>
+          )}
+          {step===5&&ans.fear&&(
+            <div style={{marginTop:28,padding:"12px 20px",background:"rgba(201,168,76,.07)",border:`1px solid rgba(201,168,76,.2)`,borderLeft:`2px solid ${G}`,marginBottom:-8}}>
+              <p style={{fontSize:12,color:G,fontFamily:SANS,fontWeight:300,fontStyle:"italic",lineHeight:1.6}}>
+                ✦ That's going on the list. No more almost.
+              </p>
+            </div>
+          )}
+          <div style={{marginTop:40,textAlign:"center",marginBottom:32}}>
+            <div style={{fontSize:10,fontWeight:600,letterSpacing:".28em",textTransform:"uppercase",color:G,marginBottom:14}}>{s.eyebrow}</div>
+            <h2 style={{fontFamily:SERIF,fontSize:"clamp(28px,5vw,52px)",fontWeight:400,color:IVY,lineHeight:1.05,letterSpacing:"-1px",marginBottom:10}}>{s.question}</h2>
+            <p style={{fontSize:15,color:MIST,fontFamily:SANS,fontWeight:300}}>{s.subtitle}</p>
+          </div>
+
+          {/* TEXT INPUT */}
+          {(s.type==="text")&&(
+            <div style={{display:"flex",gap:10,marginBottom:20}}>
+              <input ref={inputRef} value={txt} onChange={e=>setTxt(e.target.value)} onKeyDown={e=>e.key==="Enter"&&nextStep()} placeholder={s.placeholder}
+                style={{flex:1,background:"rgba(255,255,255,.05)",border:`1px solid ${RULE}`,padding:"16px 20px",fontSize:17,color:IVY,fontFamily:SANS,borderRadius:2}}/>
+              <button onClick={nextStep} className="btn-gold"
+                style={{background:G,border:"none",color:INK,padding:"16px 24px",fontSize:13,fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,borderRadius:2}}>
+                Next →
+              </button>
+            </div>
+          )}
+
+          {/* TEXT BIG */}
+          {(s.type==="text_big")&&(
+            <div style={{marginBottom:20}}>
+              <textarea ref={inputRef} value={txt} onChange={e=>setTxt(e.target.value)} placeholder={s.placeholder} rows={4}
+                style={{width:"100%",background:"rgba(255,255,255,.05)",border:`1px solid ${RULE}`,padding:"16px 20px",fontSize:16,color:IVY,fontFamily:SANS,lineHeight:1.7,resize:"vertical",marginBottom:12,borderRadius:2}}/>
+              <div style={{display:"flex",justifyContent:"flex-end",gap:10}}>
+                <button onClick={()=>{setTxt(" ");nextStep();}} className="btn-ghost"
+                  style={{background:"transparent",border:`1px solid ${RULE}`,color:MIST,padding:"12px 20px",fontSize:13,cursor:"pointer",fontFamily:SANS,borderRadius:2}}>
+                  Skip
+                </button>
+                <button onClick={nextStep} className="btn-gold"
+                  style={{background:G,border:"none",color:INK,padding:"12px 28px",fontSize:13,fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,borderRadius:2}}>
+                  Continue →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* TEXT BIG + VALUE TILES (step 3 — what matters most) */}
+          {(s.type==="text_big_values")&&(()=>{
+            const VALUE_TILES=[
+              {label:"Connection",icon:"♡",desc:"Deep relationships, belonging, love"},
+              {label:"Adventure",icon:"⚡",desc:"Pushing limits, new experiences"},
+              {label:"Freedom",icon:"✧",desc:"Independence, flexibility, my own path"},
+              {label:"Creativity",icon:"◈",desc:"Making things, expressing myself"},
+              {label:"Achievement",icon:"◎",desc:"Goals, growth, becoming my best"},
+              {label:"Family",icon:"⌂",desc:"Being present, building memories"},
+              {label:"Peace",icon:"~",desc:"Stillness, health, inner calm"},
+              {label:"Impact",icon:"✦",desc:"Leaving the world better than I found it"},
+            ];
+            const tileSelected=VALUE_TILES.find(v=>txt===v.label+` — ${v.desc}`||txt===v.label);
+            function selectTile(v){
+              const val=`${v.label} — ${v.desc}`;
+              setTxt(prev=>prev===val?"":val);
+            }
+            return(
+              <div style={{marginBottom:20}}>
+                {/* Value tiles */}
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:8,marginBottom:16}}>
+                  {VALUE_TILES.map(v=>{
+                    const sel=txt.startsWith(v.label);
+                    return(
+                      <button key={v.label} onClick={()=>selectTile(v)} className="opt-btn"
+                        style={{background:sel?"rgba(201,168,76,.12)":"rgba(255,255,255,.03)",border:`1px solid ${sel?G:RULE}`,padding:"12px 14px",cursor:"pointer",textAlign:"left",transition:"all .2s",borderRadius:2}}>
+                        <div style={{fontSize:16,color:sel?G:"rgba(245,237,216,.5)",marginBottom:4}}>{v.icon}</div>
+                        <div style={{fontSize:13,fontFamily:BASK,color:sel?G:IVY,fontWeight:sel?700:400,marginBottom:2}}>{v.label}</div>
+                        <div style={{fontSize:10,color:MIST,fontFamily:SANS,lineHeight:1.4,fontWeight:300}}>{v.desc}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Divider */}
+                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+                  <div style={{flex:1,height:1,background:RULE}}/>
+                  <span style={{fontSize:10,color:GD,fontFamily:SANS,fontWeight:600,letterSpacing:".14em",textTransform:"uppercase"}}>or describe it yourself</span>
+                  <div style={{flex:1,height:1,background:RULE}}/>
+                </div>
+                {/* Free text */}
+                <textarea ref={inputRef} value={txt.startsWith(VALUE_TILES.find(v=>txt.startsWith(v.label))?.label||"__none__")?""  :txt}
+                  onChange={e=>setTxt(e.target.value)}
+                  placeholder={s.placeholder} rows={3}
+                  style={{width:"100%",background:"rgba(255,255,255,.05)",border:`1px solid ${RULE}`,padding:"14px 18px",fontSize:15,color:IVY,fontFamily:SANS,lineHeight:1.7,resize:"vertical",marginBottom:12,borderRadius:2}}/>
+                <div style={{display:"flex",justifyContent:"flex-end",gap:10}}>
+                  <button onClick={()=>{setTxt(" ");nextStep();}} className="btn-ghost"
+                    style={{background:"transparent",border:`1px solid ${RULE}`,color:MIST,padding:"12px 20px",fontSize:13,cursor:"pointer",fontFamily:SANS,borderRadius:2}}>
+                    Skip
+                  </button>
+                  <button onClick={nextStep} className="btn-gold" disabled={!txt.trim()}
+                    style={{background:txt.trim()?G:"rgba(201,168,76,.3)",border:"none",color:INK,padding:"12px 28px",fontSize:13,fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",cursor:txt.trim()?"pointer":"default",fontFamily:SANS,borderRadius:2,transition:"all .2s"}}>
+                    Continue →
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* SINGLE ICON (life stage) */}
+          {s.type==="single_icon"&&(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))",gap:10,marginBottom:20}}>
+              {s.options.map(opt=>{
+                const sel=ans[s.id]===opt.label;
+                return(
+                  <button key={opt.id} onClick={()=>selectSingleIcon(opt)} className="opt-btn"
+                    style={{background:sel?"rgba(201,168,76,.12)":"rgba(255,255,255,.03)",border:`1px solid ${sel?G:RULE}`,padding:"16px 10px",cursor:"pointer",textAlign:"center",transition:"all .2s",borderRadius:2}}>
+                    <div style={{fontSize:22,marginBottom:6}}>{opt.icon}</div>
+                    <div style={{fontSize:12,fontFamily:BASK,color:sel?G:IVY,fontWeight:sel?700:400}}>{opt.label}</div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* SINGLE (count) */}
+          {s.type==="single"&&(
+            <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:20}}>
+              {s.options.map(opt=>{
+                const sel=ans[s.id]===opt;
+                return(
+                  <button key={opt} onClick={()=>selectSingle(opt)} className="opt-btn"
+                    style={{background:sel?"rgba(201,168,76,.1)":"rgba(255,255,255,.03)",border:`1px solid ${sel?G:RULE}`,padding:"16px 20px",cursor:"pointer",textAlign:"left",fontSize:15,color:sel?G:IVY,fontFamily:BASK,fontWeight:sel?700:400,letterSpacing:"-.2px",transition:"all .2s",borderRadius:2}}>
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* MULTISELECT (categories, difficulty) */}
+          {s.type==="multiselect"&&(
+            <>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:16}}>
+                {s.options.map(opt=>{
+                  const sel=multiSel.includes(opt);
+                  const color=CAT_COLOR[opt]||G;
+                  return(
+                    <button key={opt} onClick={()=>toggleMulti(opt)} className="opt-btn"
+                      style={{background:sel?`rgba(${sel?hexToRgb(color):"255,255,255"},.1)`:"rgba(255,255,255,.03)",border:`1px solid ${sel?color:RULE}`,padding:"12px 14px",cursor:"pointer",textAlign:"left",fontSize:12,color:sel?color:MIST,fontFamily:SANS,fontWeight:sel?700:400,letterSpacing:".05em",transition:"all .2s",display:"flex",alignItems:"center",gap:8,borderRadius:2}}>
+                      {sel&&<span style={{color:color,fontSize:10}}>✓</span>}
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+              <div style={{display:"flex",justifyContent:"flex-end",gap:10}}>
+                <button onClick={()=>{if(multiSel.length===0)setAns(p=>({...p,[s.id]:s.options}));nextStep();}} className="btn-ghost"
+                  style={{background:"transparent",border:`1px solid ${RULE}`,color:MIST,padding:"12px 20px",fontSize:13,cursor:"pointer",fontFamily:SANS,borderRadius:2}}>
+                  {multiSel.length===0?"Select All →":"Continue →"}
+                </button>
+                {multiSel.length>0&&(
+                  <button onClick={nextStep} className="btn-gold"
+                    style={{background:G,border:"none",color:INK,padding:"12px 28px",fontSize:13,fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,borderRadius:2}}>
+                    Continue ({multiSel.length}) →
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+
+          {error&&<p style={{color:"#F87171",fontSize:13,fontFamily:SANS,textAlign:"center",marginTop:12}}>{error}</p>}
+
+          {/* Step dots */}
+          <div style={{display:"flex",gap:6,justifyContent:"center",marginTop:28}}>
+            {STEPS.map((_,i)=>(
+              <div key={i} style={{width:i===step?20:6,height:6,borderRadius:3,background:i<step?G:i===step?G:"rgba(201,168,76,.2)",transition:"all .3s"}}/>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── GENERATING ───────────────────────────────────────────────── */
+  if(screen==="generating") return(
+    <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:40,position:"relative",zIndex:1,textAlign:"center"}}>
+      <Logo/>
+      <div style={{marginTop:48,maxWidth:520}}>
+        <div style={{position:"relative",width:64,height:64,margin:"0 auto 32px"}}>
+          <div style={{position:"absolute",inset:0,border:`1px solid ${RULE}`,borderRadius:"50%"}}/>
+          <div style={{position:"absolute",inset:0,border:`2px solid transparent`,borderTopColor:G,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
+          <div style={{position:"absolute",inset:8,border:`1px solid transparent`,borderTopColor:GL,borderRadius:"50%",animation:"spin .7s linear infinite reverse"}}/>
+          <div style={{position:"absolute",inset:"50%",transform:"translate(-50%,-50%)",color:G,fontSize:16}}>✦</div>
+        </div>
+        <h2 style={{fontFamily:SERIF,fontSize:"clamp(26px,4vw,42px)",fontWeight:400,color:IVY,marginBottom:16,letterSpacing:"-0.5px",lineHeight:1.15}}>
+          {ans.name ? `Building ${ans.name.split(" ")[0]}'s list…` : "Building your list…"}
+        </h2>
+        <p style={{fontSize:15,color:G,fontFamily:SANS,fontWeight:300,animation:"shimmer 2.4s ease infinite",minHeight:24,lineHeight:1.6}}>{gmsg}</p>
+        {ans.fear && (
+          <p style={{fontSize:12,color:"rgba(201,168,76,.45)",fontFamily:SANS,fontWeight:300,marginTop:16,fontStyle:"italic",lineHeight:1.6,maxWidth:380,margin:"16px auto 0"}}>
+            "{ans.fear.length > 80 ? ans.fear.slice(0,77)+"…" : ans.fear}"
+          </p>
+        )}
+        <div style={{display:"flex",gap:8,justifyContent:"center",marginTop:28}}>
+          {[0,1,2].map(i=>(
+            <div key={i} style={{width:8,height:8,borderRadius:"50%",background:G,animation:`pulse 1.4s ease ${i*.2}s infinite`}}/>
+          ))}
+        </div>
+        <p style={{fontSize:11,color:"rgba(245,237,216,.2)",fontFamily:SANS,marginTop:32,letterSpacing:".08em"}}>Building your synthesis + your full list. Takes 20–30 seconds.</p>
+      </div>
+    </div>
+  );
+
+  /* ── LIST ─────────────────────────────────────────────────────── */
+  const userName=ans.name||"";
+
+  return(
+    <div style={{minHeight:"100vh",position:"relative",zIndex:1}}>
+
+      {/* Confetti */}
+      {confetti.map(c=>(
+        <div key={c.id} style={{position:"fixed",top:"35%",left:`${c.x}%`,width:c.size,height:c.size,background:c.color,borderRadius:c.size/3,animation:`confettiFall 1.2s ease ${c.delay}s both`,zIndex:999,pointerEvents:"none"}}/>
+      ))}
+
+      {/* Modals */}
+      {showAdd&&<AddDreamModal onAdd={i=>setItems(p=>[...p,i])} onClose={()=>setShowAdd(false)}/>}
+      {showEmail&&<EmailModal userName={userName} onClose={()=>setShowEmail(false)}/>}
+      {showShare&&<ShareModal items={items} ans={ans} onClose={()=>setShowShare(false)}/>}
+      {showPDF&&<PDFModal items={items} ans={ans} onClose={()=>setShowPDF(false)}/>}
+
+      {/* Milestone banner */}
+      {milestone&&(
+        <div style={{position:"fixed",bottom:32,left:"50%",transform:"translateX(-50%)",zIndex:900,background:`linear-gradient(135deg,${TEAL},${CARD2})`,border:`1px solid ${G}`,padding:"20px 36px",textAlign:"center",boxShadow:`0 24px 64px rgba(0,0,0,.6),0 0 40px rgba(201,168,76,.2)`,animation:"riseIn .5s cubic-bezier(.22,1,.36,1) both",minWidth:280,maxWidth:"90vw"}}>
+          <div style={{fontSize:28,color:G,marginBottom:6}}>{milestone.icon}</div>
+          <div style={{fontFamily:SERIF,fontSize:22,color:IVY,letterSpacing:"-.3px",marginBottom:4}}>{milestone.msg}</div>
+          <div style={{fontSize:13,color:MIST,fontFamily:SANS,fontWeight:300}}>{milestone.sub}</div>
+        </div>
+      )}
+
+
+      {/* ── 90-DAY QUEST CTA ── */}
+      {!isShared && items.length > 0 && (
+        <div style={{background:`linear-gradient(135deg,${TEAL},#0D4545)`,borderTop:`1px solid ${RULE}`,padding:"56px 24px",textAlign:"center",marginTop:40}}>
+          <div style={{maxWidth:560,margin:"0 auto"}}>
+            <div style={{fontSize:10,color:G,fontFamily:SANS,fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",marginBottom:16}}>What happens next</div>
+            <h2 style={{fontFamily:SERIF,fontSize:"clamp(26px,4vw,40px)",color:IVY,fontWeight:400,lineHeight:1.15,marginBottom:16,letterSpacing:"-.5px"}}>
+              Turn this list into<br/><em style={{color:G,fontStyle:"italic"}}>a 90-day quest.</em>
+            </h2>
+            <p style={{fontSize:15,color:MIST,fontFamily:SANS,fontWeight:300,lineHeight:1.75,marginBottom:28,maxWidth:440,margin:"0 auto 28px"}}>
+              Every week for 90 days, we'll send you one micro-mission based on your list — a single action that moves you toward the life you just described. Free. No pitch. Just momentum.
+            </p>
+            {!LS.get("bl-email") ? (
+              <div style={{display:"flex",gap:10,maxWidth:420,margin:"0 auto",flexWrap:"wrap",justifyContent:"center"}}>
+                <input
+                  id="quest-email"
+                  type="email"
+                  placeholder="your@email.com"
+                  style={{flex:1,minWidth:200,background:"rgba(255,255,255,.06)",border:`1px solid rgba(201,168,76,.3)`,padding:"14px 18px",fontSize:14,color:IVY,fontFamily:SANS,outline:"none"}}
+                  onFocus={e=>e.target.style.borderColor=G}
+                  onBlur={e=>e.target.style.borderColor="rgba(201,168,76,.3)"}
+                />
+                <button
+                  className="btn-gold"
+                  onClick={async ()=>{
+                    const email=document.getElementById("quest-email")?.value?.trim();
+                    if(!email||!email.includes("@")) return;
+                    try{
+                      await fetch("https://connect.mailerlite.com/api/subscribers",{
+                        method:"POST",
+                        headers:{"Content-Type":"application/json","Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiZjc1MzYyNzk5MDcxNGQ2Mzk5NmVkZTAzZDQ2ZGUyNTdiMDYyMTc2OThjNTEyMGNjZTkyZjc0N2VhMzFmODllMTkwY2Q3NDBmMGI4OGQyN2UiLCJpYXQiOjE3NDE2MzAzNzYuMjMxMTY2LCJuYmYiOjE3NDE2MzAzNzYuMjMxMTY3LCJleHAiOjQ4OTczMDgzNzYuMjI5MDcsInN1YiI6IjEzMjg5OTYiLCJzY29wZXMiOltdfQ.jOqy7r0fIrH8JiL0VBxb43CqWqkMcaxRgTMG3lqpnbgzAW15UXGHIfPy3LMXqFh4MvoCREsI1k5J-IjCJ8K3bDf6GMiOIzQIoFrj8nEU3WTVRGRNGvyNLkJSBrfEj7LDe_YH0JlOGCCTL1qjt-4TjCeMcSqwF5DXHh0lAd2ByOWdYdF98u9Kq0s3wL8Fvj3VJQpCOvTAzX6gAYbVG5YLIwGpj3MFIbwkDTfHRGmcasmvJgmv0-zPRjP9NkNe9B7WS-VhUOCHDY7lv7JOhVsLf3IQ5EivuEzW7XR8hWs_H5-JTNp8U6KXoVR19bxRvEMJwqPfB9Tz2y3GWRlSSbV-oqGF56MKPQv1XRMnkFuHRvj3NwFp4Gy2BKTR3J6MEpV4WR0YfHQ9JX7Tz8MuGN5hXzS3nMqVU6LYp7bNKFtj6IiGe4dTAJzH7vM2XWLDwFCVpbR6mV5j0XsQ"},
+                        body:JSON.stringify({email,groups:["147058498547827329"],fields:{source:"90-day-quest",list_name:ans.name||""}})
+                      });
+                      LS.set("bl-email",email);
+                      const btn=document.getElementById("quest-submit");
+                      if(btn){btn.textContent="✦ Quest starts Monday";btn.style.background="#6EE7B7";btn.style.color="#071E1E";}
+                    }catch(e){console.warn("MailerLite:",e);}
+                  }}
+                  id="quest-submit"
+                  style={{background:G,border:"none",color:INK,padding:"14px 24px",fontSize:11,fontWeight:700,letterSpacing:".16em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,whiteSpace:"nowrap"}}
+                >
+                  Start My Quest ✦
+                </button>
+              </div>
+            ) : (
+              <div style={{display:"inline-flex",alignItems:"center",gap:10,background:"rgba(110,231,183,.1)",border:"1px solid rgba(110,231,183,.3)",padding:"14px 24px"}}>
+                <span style={{fontSize:16,color:"#6EE7B7"}}>✦</span>
+                <span style={{fontSize:13,color:"#6EE7B7",fontFamily:SANS,fontWeight:500}}>You're on the quest. First mission arrives Monday.</span>
+              </div>
+            )}
+            <p style={{fontSize:11,color:"rgba(245,237,216,.25)",fontFamily:SANS,marginTop:16,letterSpacing:".06em"}}>No spam. Unsubscribe anytime. One email per week.</p>
+          </div>
+        </div>
+      )}
+
+      {/* ── SHARED LIST CTA BAR ── */}
+      {isShared&&(
+        <div style={{background:`linear-gradient(90deg,${TEAL},#0D4545)`,borderBottom:`1px solid ${G}`,padding:"14px 24px",position:"sticky",top:0,zIndex:300,backdropFilter:"blur(18px)"}}>
+          <div style={{maxWidth:1260,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
+            <div>
+              <p style={{fontSize:13,color:IVY,fontFamily:SANS,fontWeight:500,marginBottom:2}}>
+                {userName?`You're viewing ${userName}'s bucket list`:"You're viewing a shared bucket list"}
+                <span style={{color:G}}> ✦</span>
+              </p>
+              <p style={{fontSize:11,color:MIST,fontFamily:SANS,fontWeight:300}}>
+                {items.length} experiences · built by AI around their life
+              </p>
+            </div>
+            <a href="/app" style={{display:"inline-flex",alignItems:"center",gap:8,background:G,color:INK,padding:"11px 28px",fontSize:11,fontWeight:700,letterSpacing:".16em",textTransform:"uppercase",fontFamily:SANS,textDecoration:"none",borderRadius:100,flexShrink:0,transition:"all .25s"}}
+              onMouseOver={e=>e.currentTarget.style.background=GL}
+              onMouseOut={e=>e.currentTarget.style.background=G}>
+              Build My Own List ✦
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* ── HEADER ── */}
+      <div style={{background:`rgba(7,30,30,.97)`,borderBottom:`1px solid ${RULE}`,padding:"16px 24px",position:"sticky",top:isShared?52:0,zIndex:200,backdropFilter:"blur(18px)"}}>
+        <div style={{maxWidth:1260,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
+          <Logo/>
+          <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+            <button onClick={()=>setShowAdd(true)} className="btn-ghost"
+              style={{background:"transparent",border:`1px solid ${RULE}`,color:MIST,padding:"9px 16px",fontSize:11,fontFamily:SANS,fontWeight:600,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",display:"flex",alignItems:"center",gap:6,borderRadius:100}}>
+              + Add Dream
+            </button>
+            <button onClick={()=>setShowShare(true)} className="btn-ghost"
+              style={{background:"transparent",border:`1px solid rgba(201,168,76,.4)`,color:G,padding:"9px 16px",fontSize:11,fontFamily:SANS,fontWeight:600,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",borderRadius:100,display:"flex",alignItems:"center",gap:5}}>
+              ✦ Share
+            </button>
+            <button onClick={()=>setShowPDF(true)} className="btn-ghost"
+              style={{background:"transparent",border:`1px solid rgba(201,168,76,.5)`,color:G,padding:"9px 16px",fontSize:11,fontFamily:SANS,fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",borderRadius:100,display:"flex",alignItems:"center",gap:5}}>
+              ⬇ Download PDF
+            </button>
+            <button onClick={()=>setShowEmail(true)} className="btn-ghost"
+              style={{background:"transparent",border:`1px solid ${RULE}`,color:MIST,padding:"9px 16px",fontSize:11,fontFamily:SANS,fontWeight:600,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",borderRadius:100}}>
+              ✉ Save
+            </button>
+            <button onClick={reset} className="btn-ghost"
+              style={{background:"transparent",border:`1px solid ${RULE}`,color:MIST,padding:"9px 16px",fontSize:11,fontFamily:SANS,fontWeight:500,letterSpacing:".1em",textTransform:"uppercase",cursor:"pointer",borderRadius:100}}>
+              ↺ New List
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── STATS BAR ── */}
+      <div style={{background:TEAL,borderBottom:`1px solid ${RULE}`,padding:"20px 24px"}}>
+        <div style={{maxWidth:1260,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:20,flexWrap:"wrap",marginBottom:12}}>
+            <div>
+              <h1 style={{fontFamily:SERIF,fontSize:"clamp(22px,3vw,32px)",fontWeight:400,color:IVY,letterSpacing:"-.5px"}}>
+                {userName?`${userName}'s Bucket List`:"Your Bucket List"}
+                <em style={{color:G,fontStyle:"italic"}}> ✦</em>
+              </h1>
+              <p style={{fontSize:13,color:MIST,fontFamily:SANS,marginTop:2}}>
+                {items.length} experiences · {doneCount} completed · {starCount} starred
+              </p>
+            </div>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontFamily:SERIF,fontSize:32,color:G,lineHeight:1}}>{pct}%</div>
+              <div style={{fontSize:10,color:MIST,fontFamily:SANS,letterSpacing:".14em",textTransform:"uppercase"}}>Complete</div>
+            </div>
+          </div>
+          {/* Progress bar */}
+          <div style={{height:3,background:"rgba(201,168,76,.15)",borderRadius:2,overflow:"hidden"}}>
+            <div style={{height:"100%",background:`linear-gradient(to right,${G},${GL})`,width:`${pct}%`,transition:"width .8s cubic-bezier(.22,1,.36,1)",borderRadius:2}}/>
+          </div>
+        </div>
+      </div>
+
+
+      {/* ── AI SYNTHESIS CARD ── */}
+      {!isShared && (synthesis || (ans.name && (ans.regret||ans.future||ans.fear))) && (
+        <div style={{maxWidth:1260,margin:"0 auto",padding:"24px 24px 0"}}>
+          <div style={{background:`linear-gradient(135deg,rgba(13,42,42,.95),rgba(11,61,61,.7))`,border:`1px solid rgba(201,168,76,.28)`,borderLeft:`3px solid ${G}`,padding:"24px 28px",animation:"riseIn .7s cubic-bezier(.22,1,.36,1) both"}}>
+            <div style={{display:"flex",alignItems:"flex-start",gap:16}}>
+              <div style={{flexShrink:0,marginTop:3}}>
+                <div style={{width:32,height:32,border:`1px solid ${G}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:G}}>✦</div>
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:9,color:G,fontFamily:SANS,fontWeight:700,letterSpacing:".22em",textTransform:"uppercase",marginBottom:12}}>What I heard about you</div>
+                {synthesis ? (
+                  <p style={{fontFamily:BASK,fontSize:16,color:IVY,lineHeight:1.8,fontStyle:"italic",margin:0}}>
+                    {synthesis}
+                  </p>
+                ) : (
+                  <p style={{fontFamily:BASK,fontSize:16,color:IVY,lineHeight:1.8,fontStyle:"italic",margin:0}}>
+                    {ans.name?.split(" ")[0] && `${ans.name.split(" ")[0]}, `}
+                    {"every item on this list connects to something you shared. "}
+                    {ans.fear?.trim() && `"${ans.fear.slice(0,70)}${ans.fear.length>70?"…":""}" is here — the thing you kept postponing. `}
+                    {ans.location?.trim() && `And several of these are genuinely reachable from ${ans.location}.`}
+                  </p>
+                )}
+                <div style={{display:"flex",alignItems:"center",gap:20,marginTop:14,flexWrap:"wrap"}}>
+                  <p style={{fontFamily:SANS,fontSize:11,color:MIST,fontWeight:300,margin:0}}>
+                    Open any card for <span style={{color:G}}>Why this is on your list</span> and <span style={{color:G}}>your first three steps.</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CONTROLS ── */}
+      <div className="controls-wrap" style={{background:`rgba(7,30,30,.97)`,borderBottom:`1px solid ${RULE}`,padding:"12px 24px",position:"sticky",top:isShared?113:61,zIndex:190,backdropFilter:"blur(14px)"}}>
+        <div style={{maxWidth:1260,margin:"0 auto",display:"flex",flexDirection:"column",gap:10}}>
+          {/* Search + sort */}
+          <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+            <div style={{position:"relative",flex:1,minWidth:200}}>
+              <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:13,color:GD,pointerEvents:"none"}}>🔍</span>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search your list..."
+                style={{width:"100%",background:"rgba(255,255,255,.04)",border:`1px solid ${RULE}`,padding:"9px 14px 9px 34px",fontSize:13,color:IVY,fontFamily:SANS,borderRadius:100}}/>
+            </div>
+            <div style={{display:"flex",gap:5,alignItems:"center"}}>
+              <span style={{fontSize:9,color:GD,letterSpacing:".14em",textTransform:"uppercase",fontFamily:SANS,fontWeight:600}}>Sort:</span>
+              {[["default","Default"],["starred","★ Starred"],["undone","Undone"],["difficulty","Difficulty"],["category","Category"]].map(([val,lbl])=>(
+                <button key={val} onClick={()=>setSortBy(val)} className="pill-filter"
+                  style={{background:sortBy===val?"rgba(201,168,76,.1)":"transparent",border:`1px solid ${sortBy===val?G:RULE}`,color:sortBy===val?G:MIST,padding:"5px 12px",fontSize:10,fontFamily:SANS,fontWeight:sortBy===val?700:500,cursor:"pointer",letterSpacing:".08em",borderRadius:100,whiteSpace:"nowrap",transition:"all .2s"}}>
+                  {lbl}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Category filters */}
+          <div className="filter-scroll" style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {["All",...CAT_KEYS,"This Weekend","This Year","Epic Goal","Lifetime Dream"].map(f=>{
+              const sel=filter===f;
+              const color=CAT_COLOR[f]||DIFF_COLOR[f]||G;
+              return(
+                <button key={f} onClick={()=>setFilter(f)} className="pill-filter"
+                  style={{background:sel?`rgba(${hexToRgb(color)},.12)`:"transparent",border:`1px solid ${sel?color:RULE}`,color:sel?color:MIST,padding:"5px 12px",fontSize:10,fontFamily:SANS,fontWeight:sel?700:500,cursor:"pointer",letterSpacing:".08em",borderRadius:100,whiteSpace:"nowrap",transition:"all .2s"}}>
+                  {f}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── GRID ── */}
+      <div style={{maxWidth:1260,margin:"0 auto",padding:"28px 16px 60px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:16}}>
+        {displayed.length===0&&search&&(
+          <div style={{gridColumn:"1/-1",textAlign:"center",padding:"60px 20px"}}>
+            <p style={{fontSize:18,color:MIST,fontFamily:SANS}}>No results for "{search}"</p>
+          </div>
+        )}
+        {displayed.map((item,idx)=>{
+          const m=gm(item.id),isDone=!!m.done,isStar=!!m.starred,hasNote=!!m.note,noteOpen=!!m.noteOpen,isCeleb=celeb===item.id;
+          const accent=CAT_COLOR[item.category]||G;
+          return(
+            <div key={item.id} className="card-item"
+              style={{background:CARD,border:`1px solid ${isCeleb?G:isStar?"rgba(201,168,76,.45)":RULE}`,overflow:"hidden",animation:`riseIn .5s cubic-bezier(.22,1,.36,1) ${(idx%12)*.04}s both`,opacity:isDone?.55:1,boxShadow:isStar?`0 4px 28px rgba(201,168,76,.12)`:"0 2px 16px rgba(0,0,0,.3)",position:"relative",borderRadius:2,...(isCeleb?{animation:"goldGlow 1s ease,celebrate .6s ease"}:{})}}>
+
+              {/* Starred corner */}
+              {isStar&&<div style={{position:"absolute",top:0,right:0,width:0,height:0,borderLeft:"28px solid transparent",borderTop:`28px solid ${G}`,zIndex:10}}/>}
+
+              <CardPhoto item={item} isDone={isDone}/>
+
+              <div style={{padding:"14px 16px 16px"}}>
+                <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:8,marginBottom:6}}>
+                  <h3 style={{fontFamily:BASK,fontSize:15,fontWeight:700,color:isDone?"rgba(245,237,216,.35)":IVY,lineHeight:1.3,textDecoration:isDone?"line-through":"none",flex:1}}>
+                    {item.title}
+                  </h3>
+                </div>
+                <p style={{fontSize:12,color:MIST,fontFamily:SANS,marginBottom:4,display:"flex",alignItems:"center",gap:4}}>
+                  <span style={{opacity:.6}}>📍</span>{item.location}
+                </p>
+                <p style={{fontSize:13,color:"rgba(245,237,216,.6)",fontFamily:SANS,lineHeight:1.72,marginBottom:item.why?8:10}}>
+                  {item.description}
+                </p>
+
+                {/* Why this — personalized reason */}
+                {item.why&&(
+                  <div style={{background:`rgba(201,168,76,.06)`,borderLeft:`2px solid ${G}`,padding:"7px 11px",marginBottom:10,borderRadius:"0 2px 2px 0"}}>
+                    <p style={{fontSize:11,color:G,fontFamily:SANS,lineHeight:1.65,fontWeight:500,letterSpacing:".01em"}}>{item.why}</p>
+                  </div>
+                )}
+
+                <NextSteps steps={item.nextSteps}/>
+
+                {isDone&&m.doneDate&&(
+                  <div style={{marginBottom:8}}>
+                    <span style={{fontSize:11,color:G,fontFamily:SANS,fontWeight:600}}>✓ Completed {fmtDate(m.doneDate)}</span>
+                  </div>
+                )}
+
+                {hasNote&&!noteOpen&&(
+                  <div style={{background:"rgba(201,168,76,.07)",borderLeft:`2px solid ${G}`,padding:"7px 11px",marginBottom:9,animation:"noteIn .25s ease",borderRadius:"0 2px 2px 0"}}>
+                    <p style={{fontSize:12,color:IVY,fontFamily:SANS,lineHeight:1.65,fontStyle:"italic"}}>{m.note}</p>
+                  </div>
+                )}
+
+                {noteOpen&&(
+                  <div style={{marginBottom:9,animation:"noteIn .2s ease"}}>
+                    <textarea value={noteDraft[item.id]||""} onChange={e=>setNoteDraft(p=>({...p,[item.id]:e.target.value}))}
+                      placeholder="Add a note, plan, memory, or wish..." rows={3}
+                      style={{width:"100%",background:"rgba(255,255,255,.04)",border:`1px solid ${RULE}`,padding:"9px 12px",fontSize:13,color:IVY,fontFamily:SANS,lineHeight:1.65,resize:"vertical",borderRadius:2}}/>
+                    <div style={{display:"flex",gap:7,marginTop:6}}>
+                      <button onClick={()=>saveNote(item.id)} className="btn-gold"
+                        style={{flex:1,background:G,border:"none",color:INK,padding:"8px 14px",fontSize:11,fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,borderRadius:2}}>Save</button>
+                      <button onClick={()=>closeNote(item.id)} className="btn-ghost"
+                        style={{background:"transparent",border:`1px solid ${RULE}`,color:MIST,padding:"8px 12px",fontSize:11,cursor:"pointer",fontFamily:SANS,borderRadius:2}}>Cancel</button>
+                    </div>
+                  </div>
+                )}
+
+                <Rule mb={10} op={.15}/>
+
+                {/* Action buttons */}
+                <div style={{display:"flex",gap:6,marginBottom:7}}>
+                  <button className="act-btn" onClick={()=>toggleStar(item.id)}
+                    style={{flex:1,background:isStar?"rgba(201,168,76,.1)":"rgba(255,255,255,.03)",border:`1px solid ${isStar?G:RULE}`,color:isStar?G:MIST,padding:"7px 8px",fontSize:11,cursor:"pointer",fontFamily:SANS,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:4,transition:"all .2s",borderRadius:2}}>
+                    <span>{isStar?"★":"☆"}</span><span>{isStar?"Starred":"Star"}</span>
+                  </button>
+                  <button className="act-btn" onClick={()=>noteOpen?closeNote(item.id):openNote(item.id)}
+                    style={{flex:1,background:hasNote?"rgba(201,168,76,.07)":"rgba(255,255,255,.03)",border:`1px solid ${hasNote?"rgba(201,168,76,.35)":RULE}`,color:hasNote?G:MIST,padding:"7px 8px",fontSize:11,cursor:"pointer",fontFamily:SANS,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:4,transition:"all .2s",borderRadius:2}}>
+                    <span>📝</span><span>{hasNote?"Edit":"Note"}</span>
+                  </button>
+                  {item.custom&&(
+                    <button className="act-btn" onClick={()=>removeItem(item.id)}
+                      style={{background:"rgba(255,255,255,.02)",border:`1px solid ${RULE}`,color:"rgba(245,237,216,.25)",padding:"7px 10px",fontSize:11,cursor:"pointer",fontFamily:SANS,fontWeight:600,transition:"all .2s",borderRadius:2}}
+                      title="Remove">✕</button>
+                  )}
+                </div>
+
+                {/* Mark complete */}
+                <button className="done-btn" onClick={()=>toggleDone(item.id)}
+                  style={{width:"100%",background:isDone?"rgba(201,168,76,.1)":"transparent",border:`2px solid ${isDone?G:"rgba(201,168,76,.3)"}`,color:isDone?G:IVY,padding:"9px 14px",fontSize:11,letterSpacing:".1em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",gap:6,transition:"all .25s",marginBottom:7,borderRadius:2}}>
+                  {isDone?<><span>✓</span><span>Done{m.doneDate?" · "+fmtDate(m.doneDate):""}</span></>:<><span>○</span><span>Mark as Complete</span></>}
+                </button>
+
+                {/* Smart affiliate button */}
+                <a href={getAffiliateUrl(item)} target="_blank" rel="noopener noreferrer"
+                  style={{display:"flex",alignItems:"center",justifyContent:"center",gap:7,width:"100%",background:"linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06))",border:`1px solid rgba(201,168,76,.35)`,color:G,padding:"10px 14px",fontSize:11,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,fontWeight:700,textDecoration:"none",transition:"all .22s",borderRadius:2}}>
+                  {getAffiliateCTA(item)}
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── FOOTER ── */}
+      <div style={{maxWidth:1260,margin:"0 auto",padding:"0 20px 60px",display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
+        <Rule op={.3}/>
+        <div style={{display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center",marginTop:8}}>
+          <a href="/ideas" rel="noopener noreferrer"
+            style={{background:"transparent",border:`2px solid rgba(201,168,76,.3)`,color:G,padding:"12px 32px",fontSize:11,letterSpacing:".14em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,fontWeight:700,textDecoration:"none",display:"inline-block",transition:"all .25s",borderRadius:100}}
+            onMouseOver={e=>{e.currentTarget.style.background="rgba(201,168,76,.08)";e.currentTarget.style.borderColor=G}}
+            onMouseOut={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.borderColor="rgba(201,168,76,.3)"}}>
+            ✦ Browse 1,000 Experiences
+          </a>
+          <button onClick={()=>setShowShare(true)}
+            style={{background:G,border:"none",color:INK,padding:"12px 28px",fontSize:11,letterSpacing:".14em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,fontWeight:700,transition:"all .22s",borderRadius:100}}
+            onMouseOver={e=>e.currentTarget.style.background=GL}
+            onMouseOut={e=>e.currentTarget.style.background=G}>
+            ✦ Share My List
+          </button>
+          <button onClick={()=>setShowEmail(true)}
+            style={{background:"rgba(201,168,76,.08)",border:`2px solid rgba(201,168,76,.22)`,color:G,padding:"12px 24px",fontSize:11,letterSpacing:".12em",textTransform:"uppercase",cursor:"pointer",fontFamily:SANS,fontWeight:700,transition:"all .22s",borderRadius:100}}>
+            ✉ Save My List
+          </button>
+        </div>
+        <button onClick={reset} style={{background:"none",border:"none",color:MIST,fontSize:11,letterSpacing:".12em",cursor:"pointer",fontFamily:SANS,textTransform:"uppercase",fontWeight:500}}>
+          ↺ Start Over
+        </button>
+        <div style={{display:"flex",alignItems:"center",gap:14,marginTop:4}}>
+          <div style={{height:1,width:36,background:`linear-gradient(to right,transparent,${G})`}}/>
+          <span style={{color:G,fontSize:13}}>✦</span>
+          <div style={{height:1,width:36,background:`linear-gradient(to left,transparent,${G})`}}/>
+        </div>
+        <p style={{fontSize:10,color:GD,letterSpacing:".18em",textTransform:"uppercase",fontFamily:SANS,fontWeight:600}}>© 2026 The Bucket List AI · Your Dreams. One Lifetime.</p>
+      </div>
+    </div>
+  );
+}
+
+/* ── HELPER: hex to rgb for rgba() ──────────────────────────────── */
+function hexToRgb(hex){
+  const r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return r?`${parseInt(r[1],16)},${parseInt(r[2],16)},${parseInt(r[3],16)}`:"201,168,76";
+}
+
+ReactDOM.render(<App/>, document.getElementById("root"));
+</script>
+</body>
+</html>
