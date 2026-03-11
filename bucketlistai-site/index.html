@@ -197,7 +197,7 @@
 
     .hero-photo{
       position:absolute;inset:0;z-index:0;
-      background:url('https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?w=1800&q=80')
+      background:url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1800&q=80')
         center/cover no-repeat;
       animation:kbz 22s ease-in-out infinite alternate;
     }
@@ -868,7 +868,7 @@
     <a href="/ideas">Ideas</a>
     <a href="/blog">Blog</a>
     <a href="/about">About</a>
-    <a href="mailto:hello@thebucketlistai.com">Contact</a>
+    <a href="/cdn-cgi/l/email-protection#325a575e5e5d72465a575047515957465e5b4146535b1c515d5f">Contact</a>
   </div>
   <a href="/app" class="nav-cta">Build My List ✦</a>
   <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
@@ -881,7 +881,7 @@
   <a href="/ideas" onclick="closeMenu()">Ideas</a>
   <a href="/blog" onclick="closeMenu()">Blog</a>
   <a href="/about" onclick="closeMenu()">About</a>
-  <a href="mailto:hello@thebucketlistai.com" onclick="closeMenu()">Contact</a>
+  <a href="/cdn-cgi/l/email-protection#acc4c9c0c0c3ecd8c4c9ced9cfc7c9d8c0c5dfd8cdc582cfc3c1" onclick="closeMenu()">Contact</a>
   <a href="/app" class="mob-cta" onclick="closeMenu()">Build My List ✦</a>
   <div class="mob-tagline">Your Dreams. One Lifetime.</div>
 </div>
@@ -1020,7 +1020,7 @@
       <!-- Row 1: hero card + Travel + Wellness -->
       <div class="cat-row-1">
         <a href="/ideas" class="cat-card cat-card-a">
-          <div class="cat-bg" style="background-image:url('https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?w=900&q=75')"></div>
+          <div class="cat-bg" style="background-image:url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=900&q=75')"></div>
           <div class="cat-overlay"></div>
           <div class="cat-side" style="background:#7BC67E"></div>
           <div class="cat-arrow">→</div>
@@ -1444,7 +1444,7 @@
     <div>
       <div class="footer-brand">The Bucket List <em>AI</em></div>
       <p class="footer-tag">An AI that listens deeply and builds something only you could have. Your dreams. One lifetime.</p>
-      <a href="mailto:hello@thebucketlistai.com" class="footer-email">hello@thebucketlistai.com</a>
+      <a href="/cdn-cgi/l/email-protection#e58d8089898aa5918d808790868e8091898c9691848ccb868a88" class="footer-email"><span class="__cf_email__" data-cfemail="f39b969f9f9cb3879b969186909896879f9a8087929add909c9e">[email&#160;protected]</span></a>
     </div>
     <div class="footer-col">
       <h4>Explore</h4>
@@ -1466,7 +1466,7 @@
     <div class="footer-col">
       <h4>Company</h4>
       <ul>
-        <li><a href="mailto:hello@thebucketlistai.com">Contact</a></li>
+        <li><a href="/cdn-cgi/l/email-protection#28404d444447685c404d4a5d4b434d5c44415b5c4941064b4745">Contact</a></li>
         <li><a href="/privacy">Privacy Policy</a></li>
         <li><a href="/terms">Terms of Use</a></li>
       </ul>
@@ -1477,7 +1477,7 @@
     <span class="footer-sig">Your Dreams. One Lifetime.</span>
   </div>
 </footer>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   const nav=document.getElementById('nav');
   if(nav)window.addEventListener('scroll',()=>nav.classList.toggle('solid',window.scrollY>50),{passive:true});
   const hamburger=document.getElementById('hamburger');
@@ -1505,15 +1505,4 @@
         const btn=form.querySelector('button[type="submit"],button');
         if(!inp||!btn)return;
         const email=inp.value.trim();
-        if(!email||!email.includes('@'))return;
-        const orig=btn.textContent;
-        btn.textContent='Subscribing…';btn.disabled=true;
-        const ok=await mlSubscribe(email,window.location.href);
-        if(ok){btn.textContent='✦ You\'re in!';btn.style.background='#0B3D3D';btn.style.color='#C9A84C';inp.value='';}
-        else{btn.textContent=orig;btn.disabled=false;}
-      });
-    });
-  });
-</script>
-</body>
-</html>
+        if(!email||!email.includes
